@@ -77,9 +77,9 @@ function startRenderLoop() {
         removeContainer: true,
       });
     } catch (error) {
-      console.error('Не удалось отрисовать кадр слота', error);
+      console.error('Failed to render slot frame', error);
       stopRecording(true);
-      statusLabel.textContent = 'Ошибка при рендере слота.';
+      statusLabel.textContent = 'Rendering error. Recording stopped.';
       return;
     }
 
@@ -95,7 +95,7 @@ function startRenderLoop() {
 
 async function startRecording() {
   if (typeof window.html2canvas !== 'function') {
-    statusLabel.textContent = 'Инструмент захвата не загрузился.';
+    statusLabel.textContent = 'Capture tool failed to load.';
     return;
   }
 
@@ -108,7 +108,7 @@ async function startRecording() {
   recordingPreview.pause();
   downloadLink.hidden = true;
   recordButton.disabled = true;
-  statusLabel.textContent = 'Подготовка…';
+  statusLabel.textContent = 'Preparing capture…';
 
   await new Promise((resolve) => {
     window.requestAnimationFrame(() => {
@@ -130,8 +130,8 @@ async function startRecording() {
       videoBitsPerSecond: 8_000_000,
     });
   } catch (error) {
-    console.error('Не удалось создать MediaRecorder', error);
-    statusLabel.textContent = 'Браузер не поддерживает запись.';
+    console.error('Failed to create MediaRecorder', error);
+    statusLabel.textContent = 'Recording is not supported in this browser.';
     recordButton.disabled = false;
     return;
   }
@@ -157,7 +157,7 @@ async function startRecording() {
     recordingPreview.load();
     downloadLink.href = url;
     downloadLink.hidden = false;
-    statusLabel.textContent = 'Запись завершена. Можно скачать файл.';
+    statusLabel.textContent = 'Recording finished. You can download the file.';
 
     if (activeStream) {
       activeStream.getTracks().forEach((track) => track.stop());
@@ -165,15 +165,15 @@ async function startRecording() {
     }
 
     mediaRecorder = null;
-    recordButton.textContent = 'Начать запись';
+    recordButton.textContent = 'Start recording';
     recordButton.disabled = false;
   };
 
   mediaRecorder.start();
   isRecording = true;
-  recordButton.textContent = 'Остановить запись';
+  recordButton.textContent = 'Stop recording';
   recordButton.disabled = false;
-  statusLabel.textContent = 'Идет запись…';
+  statusLabel.textContent = 'Recording…';
   startRenderLoop();
 }
 
@@ -186,7 +186,7 @@ function stopRecording(force = false) {
         activeStream.getTracks().forEach((track) => track.stop());
         activeStream = null;
       }
-      recordButton.textContent = 'Начать запись';
+      recordButton.textContent = 'Start recording';
       recordButton.disabled = false;
     }
     return;
