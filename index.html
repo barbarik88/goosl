@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gates of Olympus — slot capture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: only light;
+        font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont,
+          sans-serif;
+        --bg-sky-top: #fbe4f2;
+        --bg-sky-mid: #f3b6ff;
+        --bg-sky-bottom: #6a2add;
+        --gold-outer: #feda66;
+        --gold-mid: #f6b13d;
+        --gold-inner: #b96210;
+        --violet-dark: #3a0d75;
+        --violet-medium: #5c14ba;
+        --violet-light: #a35df8;
+        --panel-bg: rgba(19, 9, 53, 0.82);
+        --panel-border: rgba(255, 199, 115, 0.65);
+        --text-shadow-strong: 0 3px 12px rgba(22, 0, 40, 0.85);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background:
+          radial-gradient(
+              circle at 50% -10%,
+              rgba(255, 255, 255, 0.95) 0%,
+              transparent 55%
+            ),
+          linear-gradient(
+            180deg,
+            var(--bg-sky-top) 0%,
+            var(--bg-sky-mid) 45%,
+            var(--bg-sky-bottom) 100%
+          );
+        background-attachment: fixed;
+        color: #fff;
+        overflow-x: hidden;
+      }
+
+      .background-glow {
+        position: fixed;
+        inset: -20% 0 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+              circle at 30% 20%,
+              rgba(255, 255, 255, 0.35) 0%,
+              transparent 52%
+            ),
+          radial-gradient(
+              circle at 70% 15%,
+              rgba(255, 225, 163, 0.45) 0%,
+              transparent 48%
+            ),
+          radial-gradient(
+              circle at 50% 40%,
+              rgba(234, 112, 255, 0.25) 0%,
+              transparent 60%
+            );
+        mix-blend-mode: screen;
+        z-index: -1;
+      }
+
+      .layout {
+        width: min(1200px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: clamp(2.5rem, 6vw, 4.5rem);
+        padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.5rem, 4vw, 3.2rem);
+        justify-items: center;
+        align-items: start;
+      }
+
+      .stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(1.2rem, 2vw, 1.8rem);
+      }
+
+      .slot-frame {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: clamp(1.1rem, 2.5vw, 1.8rem);
+        border-radius: clamp(36px, 6vw, 46px);
+        background: linear-gradient(
+          140deg,
+          rgba(255, 255, 255, 0.85) 0%,
+          rgba(255, 219, 145, 0.85) 35%,
+          rgba(215, 120, 35, 0.95) 100%
+        );
+        box-shadow:
+          0 28px 60px rgba(36, 0, 61, 0.55),
+          inset 0 2px 18px rgba(255, 255, 255, 0.45);
+        overflow: visible;
+        transition: width 0.4s ease, aspect-ratio 0.4s ease;
+      }
+
+      .slot-frame::after {
+        content: '';
+        position: absolute;
+        inset: -7% -6% -10%;
+        border-radius: clamp(42px, 7vw, 54px);
+        background: radial-gradient(
+          circle at 50% 20%,
+          rgba(255, 255, 255, 0.5) 0%,
+          transparent 70%
+        );
+        filter: blur(30px);
+        z-index: -1;
+      }
+
+      .slot-frame.ratio-9-16 {
+        width: clamp(260px, 28vw, 380px);
+        aspect-ratio: 9 / 16;
+      }
+
+      .slot-frame.ratio-1-1 {
+        width: clamp(300px, 32vw, 420px);
+        aspect-ratio: 1 / 1;
+      }
+
+      .slot-border {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: clamp(30px, 5vw, 40px);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.92) 0%,
+            rgba(255, 217, 148, 0.92) 32%,
+            rgba(255, 160, 82, 0.85) 100%
+          );
+        border: 6px solid rgba(255, 255, 255, 0.75);
+        box-shadow:
+          inset 0 0 0 2px rgba(255, 255, 255, 0.5),
+          inset 0 -24px 28px rgba(88, 20, 115, 0.35);
+        padding: clamp(1.35rem, 2.8vw, 2.1rem)
+          clamp(1.2rem, 2.5vw, 1.8rem) clamp(2.2rem, 4vw, 3rem);
+        overflow: hidden;
+      }
+
+      .slot-border::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 233, 163, 0.45) 45%,
+            rgba(255, 181, 79, 0.4) 100%
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.08) 0,
+            rgba(255, 255, 255, 0.08) 48px,
+            rgba(195, 140, 252, 0.28) 48px,
+            rgba(195, 140, 252, 0.28) 78px
+          );
+        opacity: 0.65;
+        mix-blend-mode: screen;
+      }
+
+      .slot-scene {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+        color: #fff;
+      }
+
+      .logo {
+        display: grid;
+        justify-items: center;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-family: 'Cinzel Decorative', 'Bebas Neue', sans-serif;
+        margin-bottom: clamp(0.8rem, 1.6vw, 1.1rem);
+        text-shadow:
+          0 4px 8px rgba(0, 0, 0, 0.65),
+          0 0 18px rgba(255, 205, 105, 0.95);
+      }
+
+      .logo-top {
+        font-size: clamp(1.7rem, 3.2vw, 2rem);
+        color: #ffedb7;
+        text-shadow:
+          0 2px 6px rgba(0, 0, 0, 0.5),
+          0 0 12px rgba(255, 210, 120, 0.8);
+      }
+
+      .logo-bottom {
+        font-size: clamp(2.8rem, 5vw, 3.6rem);
+        color: #fff6ce;
+        letter-spacing: 0.18em;
+      }
+
+      .hero {
+        position: relative;
+        width: 100%;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        margin-bottom: clamp(0.9rem, 2.5vw, 1.4rem);
+        padding-bottom: clamp(0.8rem, 1.8vw, 1.4rem);
+        isolation: isolate;
+      }
+
+      .hero-background {
+        position: absolute;
+        inset: -14% -18% -6%;
+        border-radius: clamp(24px, 4vw, 34px);
+        overflow: hidden;
+        box-shadow:
+          inset 0 0 0 2px rgba(255, 255, 255, 0.45),
+          inset 0 -28px 48px rgba(60, 6, 132, 0.6);
+        pointer-events: none;
+      }
+
+      .hero-background-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.08);
+        filter: saturate(1.3) contrast(1.1);
+        animation: backgroundPan 18s ease-in-out infinite alternate;
+      }
+
+      .hero-background-overlay {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(30, 6, 72, 0.1) 0%,
+            rgba(95, 20, 155, 0.25) 40%,
+            rgba(140, 38, 186, 0.35) 100%
+          );
+        mix-blend-mode: screen;
+        pointer-events: none;
+      }
+
+      .scatter-cloud {
+        position: absolute;
+        top: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: clamp(0.35rem, 0.8vw, 0.6rem);
+        padding:
+          clamp(0.45rem, 1vw, 0.65rem) clamp(0.7rem, 1.4vw, 0.95rem);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: clamp(28px, 5vw, 36px);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow:
+          0 12px 32px rgba(40, 0, 80, 0.35),
+          inset 0 0 18px rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(8px);
+        animation: floatCloud 8s ease-in-out infinite;
+      }
+
+      .scatter-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(255, 217, 166, 0.85) 100%
+          );
+        color: #8436d4;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-shadow: 0 2px 6px rgba(255, 255, 255, 0.7);
+        animation: pulse 2.8s ease-in-out infinite;
+      }
+
+      .hero-lightning {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+
+      .bolt {
+        position: absolute;
+        width: clamp(80px, 10vw, 120px);
+        height: clamp(160px, 22vw, 230px);
+        background:
+          radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(255, 255, 255, 0.6) 35%,
+            rgba(159, 205, 255, 0) 70%
+          );
+        filter: blur(2px);
+        opacity: 0.6;
+        animation: flicker 2.5s infinite;
+      }
+
+      .bolt::after {
+        content: '';
+        position: absolute;
+        inset: 12% 45% 12% 45%;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(129, 199, 255, 0.8) 60%,
+            rgba(138, 104, 255, 0) 100%
+          );
+        filter: blur(0.5px);
+      }
+
+      .bolt-left {
+        left: clamp(4%, 5vw, 10%);
+        bottom: clamp(12%, 14vw, 20%);
+        transform: rotate(-6deg);
+        animation-delay: -1.4s;
+      }
+
+      .bolt-right {
+        right: clamp(6%, 7vw, 11%);
+        bottom: clamp(18%, 12vw, 18%);
+        transform: rotate(6deg);
+        animation-delay: -0.8s;
+      }
+
+      .bolt-top {
+        left: 50%;
+        transform: translateX(-50%) rotate(2deg);
+        top: clamp(6%, 7vw, 10%);
+        height: clamp(140px, 18vw, 200px);
+        animation-delay: -2s;
+      }
+
+      .hero-zeus {
+        position: relative;
+        width: clamp(70%, 72%, 78%);
+        max-width: 360px;
+        filter: drop-shadow(0 28px 36px rgba(27, 0, 59, 0.65));
+        transform-origin: bottom center;
+        animation: zeusFloat 5.6s ease-in-out infinite;
+      }
+
+      .promo-card {
+        position: relative;
+        width: clamp(80%, 92%, 95%);
+        padding:
+          clamp(1rem, 2vw, 1.4rem) clamp(1.1rem, 3vw, 1.9rem)
+          clamp(1.4rem, 3vw, 2rem);
+        border-radius: clamp(22px, 4vw, 30px);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.92) 0%,
+            rgba(255, 210, 143, 0.92) 55%,
+            rgba(255, 152, 77, 0.92) 100%
+          );
+        color: #4a0c80;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        box-shadow:
+          inset 0 0 0 2px rgba(255, 255, 255, 0.65),
+          inset 0 -12px 22px rgba(160, 76, 255, 0.3),
+          0 20px 40px rgba(24, 0, 51, 0.35);
+        overflow: hidden;
+      }
+
+      .promo-card::before {
+        content: '';
+        position: absolute;
+        inset: -30% -20% 30% -20%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.8) 0%,
+          rgba(255, 255, 255, 0) 65%
+        );
+        opacity: 0.55;
+        animation: shimmer 6s ease-in-out infinite;
+      }
+
+      .promo-pretitle {
+        font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+        font-weight: 600;
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        background:
+          linear-gradient(
+            120deg,
+            rgba(140, 36, 186, 0.9) 0%,
+            rgba(90, 18, 140, 0.95) 100%
+          );
+        color: #fff;
+        text-shadow: var(--text-shadow-strong);
+        margin-bottom: clamp(0.6rem, 1.4vw, 0.9rem);
+        letter-spacing: 0.2em;
+      }
+
+      .promo-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(3rem, 5vw, 3.9rem);
+        letter-spacing: 0.22em;
+        margin: 0;
+        color: #4a0c80;
+        text-shadow:
+          0 6px 18px rgba(255, 255, 255, 0.9),
+          0 0 18px rgba(189, 116, 255, 0.6);
+      }
+
+      .promo-subtitle {
+        font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+        font-weight: 800;
+        margin: 0.4rem 0 0.8rem;
+        color: rgba(74, 12, 128, 0.9);
+      }
+
+      .divider {
+        width: 100%;
+        height: 4px;
+        border-radius: 999px;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(74, 12, 128, 0) 0%,
+            rgba(74, 12, 128, 0.45) 22%,
+            rgba(74, 12, 128, 0.85) 50%,
+            rgba(74, 12, 128, 0.45) 78%,
+            rgba(74, 12, 128, 0) 100%
+          );
+        margin: clamp(0.8rem, 1.6vw, 1rem) 0;
+      }
+
+      .promo-footnote {
+        font-size: clamp(0.8rem, 1.4vw, 1rem);
+        font-weight: 600;
+        margin: 0 0 clamp(0.9rem, 1.8vw, 1.2rem);
+        color: rgba(74, 12, 128, 0.78);
+        letter-spacing: 0.18em;
+      }
+
+      .scatter-strip {
+        display: flex;
+        justify-content: center;
+        gap: clamp(0.6rem, 1.2vw, 0.9rem);
+      }
+
+      .scatter-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.55rem 0.9rem;
+        border-radius: 18px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(255, 212, 160, 0.95) 100%
+          );
+        color: #8436d4;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        box-shadow:
+          0 12px 24px rgba(40, 0, 80, 0.35),
+          inset 0 0 16px rgba(255, 255, 255, 0.45);
+        animation: pulse 3.4s ease-in-out infinite;
+      }
+
+      .control-panel {
+        width: min(380px, 92vw);
+        display: grid;
+        gap: clamp(1.2rem, 2.4vw, 1.6rem);
+        padding: clamp(1.2rem, 3vw, 1.8rem);
+        background: var(--panel-bg);
+        border-radius: 24px;
+        border: 1px solid var(--panel-border);
+        box-shadow: 0 16px 40px rgba(18, 0, 40, 0.45);
+        backdrop-filter: blur(8px);
+      }
+
+      .format-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .format-button {
+        padding: 0.75rem 1.1rem;
+        border-radius: 16px;
+        border: 0;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background:
+          linear-gradient(140deg, #6c1ad5 0%, #b05fff 48%, #f8c86f 100%);
+        box-shadow:
+          0 12px 28px rgba(43, 0, 80, 0.4),
+          inset 0 2px 4px rgba(255, 255, 255, 0.4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+          filter 0.2s ease;
+        cursor: pointer;
+      }
+
+      .format-button:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 16px 28px rgba(43, 0, 80, 0.55),
+          inset 0 2px 6px rgba(255, 255, 255, 0.4);
+      }
+
+      .format-button.active {
+        filter: drop-shadow(0 6px 14px rgba(255, 200, 111, 0.8));
+        background:
+          linear-gradient(140deg, #ffca4f 0%, #ff8757 48%, #f940c4 100%);
+      }
+
+      .record-controls {
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .record-button {
+        padding: 0.9rem 1.2rem;
+        border-radius: 20px;
+        border: 0;
+        font-weight: 800;
+        font-size: 1.05rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #fff;
+        background:
+          linear-gradient(135deg, #ff4f6d 0%, #ff914d 55%, #ffd24f 100%);
+        box-shadow:
+          0 20px 40px rgba(70, 0, 40, 0.5),
+          inset 0 3px 6px rgba(255, 255, 255, 0.45);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+          filter 0.2s ease;
+      }
+
+      .record-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+        filter: grayscale(0.3);
+        box-shadow:
+          0 8px 18px rgba(30, 0, 30, 0.3),
+          inset 0 2px 5px rgba(255, 255, 255, 0.2);
+      }
+
+      .status {
+        font-size: 0.95rem;
+        letter-spacing: 0.05em;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .recording-output {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .recording-preview {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow:
+          0 12px 32px rgba(18, 0, 40, 0.45),
+          inset 0 0 12px rgba(255, 255, 255, 0.25);
+      }
+
+      .download-link {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.8rem 1rem;
+        border-radius: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.08em;
+        color: #26104d;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 217, 162, 0.95) 100%);
+        box-shadow:
+          0 12px 24px rgba(18, 0, 40, 0.35),
+          inset 0 2px 6px rgba(255, 255, 255, 0.7);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .download-link:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 16px 28px rgba(18, 0, 40, 0.45),
+          inset 0 2px 6px rgba(255, 255, 255, 0.7);
+      }
+
+      .record-canvas {
+        display: block;
+        max-width: 100%;
+      }
+
+      @keyframes backgroundPan {
+        0% {
+          transform: scale(1.08) translateX(-3%);
+        }
+
+        100% {
+          transform: scale(1.08) translateX(3%);
+        }
+      }
+
+      @keyframes floatCloud {
+        0%,
+        100% {
+          transform: translate(-50%, -3%);
+        }
+
+        50% {
+          transform: translate(-50%, 2%);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 6px rgba(255, 240, 200, 0.8));
+        }
+
+        50% {
+          transform: scale(1.07);
+          filter: drop-shadow(0 0 16px rgba(255, 200, 120, 0.9));
+        }
+      }
+
+      @keyframes flicker {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+
+        45% {
+          opacity: 0.2;
+        }
+
+        55% {
+          opacity: 0.85;
+        }
+
+        70% {
+          opacity: 0.35;
+        }
+      }
+
+      @keyframes zeusFloat {
+        0%,
+        100% {
+          transform: translateY(0) scale(1.01);
+        }
+
+        50% {
+          transform: translateY(-2.5%) scale(1.02);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-20%);
+        }
+
+        100% {
+          transform: translateX(20%);
+        }
+      }
+
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+          gap: clamp(2rem, 6vw, 3.5rem);
+        }
+
+        .stage {
+          order: 2;
+        }
+
+        .control-panel {
+          order: 1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          align-items: flex-start;
+        }
+
+        .layout {
+          padding: clamp(2rem, 8vw, 3rem) clamp(1rem, 6vw, 1.6rem);
+        }
+
+        .slot-frame {
+          padding: clamp(0.9rem, 4vw, 1.2rem);
+        }
+
+        .slot-border {
+          padding: clamp(1.2rem, 5vw, 1.6rem)
+            clamp(1rem, 4vw, 1.4rem) clamp(1.8rem, 6vw, 2.3rem);
+        }
+
+        .promo-card {
+          width: 100%;
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  </head>
+  <body>
+    <div class="background-glow" aria-hidden="true"></div>
+    <div class="layout">
+      <section class="stage">
+        <div id="slotFrame" class="slot-frame ratio-9-16" aria-labelledby="game-title">
+          <div class="slot-border">
+            <main id="gameplay" class="slot-scene">
+              <header class="logo" id="game-title" aria-label="Gates of Olympus slot title">
+                <span class="logo-top">GATES OF</span>
+                <span class="logo-bottom">OLYMPUS</span>
+              </header>
+
+              <section class="hero" aria-hidden="true">
+                <div class="hero-background">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Parthenon_in_Athens.jpg"
+                    alt="Temple of the Parthenon in Athens"
+                    class="hero-background-image"
+                    loading="eager"
+                    draggable="false"
+                  />
+                  <div class="hero-background-overlay"></div>
+                </div>
+
+                <div class="scatter-cloud">
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                </div>
+
+                <div class="hero-lightning" aria-hidden="true">
+                  <span class="bolt bolt-left"></span>
+                  <span class="bolt bolt-right"></span>
+                  <span class="bolt bolt-top"></span>
+                </div>
+
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Statue_of_Zeus_Louvre_Ma489.jpg"
+                  alt="Zeus conjuring lightning"
+                  class="hero-zeus"
+                  loading="eager"
+                  draggable="false"
+                />
+              </section>
+
+              <section class="promo-card" aria-label="Welcome bonus">
+                <span class="promo-pretitle">LEGENDARY BONUS</span>
+                <h1 class="promo-title">299 FREE SPINS</h1>
+                <p class="promo-subtitle">+1 SPECIAL SPIN</p>
+                <div class="divider"></div>
+                <p class="promo-footnote">FOR ALL NEW PLAYERS</p>
+                <div class="scatter-strip" aria-hidden="true">
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                </div>
+              </section>
+            </main>
+          </div>
+        </div>
+        <canvas id="recordCanvas" class="record-canvas" hidden></canvas>
+      </section>
+
+      <aside class="control-panel">
+        <div class="format-controls" role="group" aria-label="Recording aspect ratio">
+          <button type="button" class="format-button active" data-ratio="9-16">
+            9 : 16
+          </button>
+          <button type="button" class="format-button" data-ratio="1-1">
+            1 : 1
+          </button>
+        </div>
+
+        <div class="record-controls">
+          <button id="recordButton" class="record-button" type="button">
+            Start recording
+          </button>
+          <span id="statusLabel" class="status">Ready to record</span>
+        </div>
+
+        <section class="recording-output" aria-live="polite">
+          <video
+            id="recordingPreview"
+            class="recording-preview"
+            controls
+            playsinline
+            hidden
+          ></video>
+          <a
+            id="downloadLink"
+            class="download-link"
+            download="gate-of-olympus-gameplay.webm"
+            hidden
+            >Download recording</a
+          >
+        </section>
+      </aside>
+    </div>
+    <script>
+      const recordButton = document.getElementById('recordButton');
+      const statusLabel = document.getElementById('statusLabel');
+      const recordingPreview = document.getElementById('recordingPreview');
+      const downloadLink = document.getElementById('downloadLink');
+      const slotFrame = document.getElementById('slotFrame');
+      const recordCanvas = document.getElementById('recordCanvas');
+      const formatButtons = document.querySelectorAll('.format-button');
+
+      const FRAME_RATE = 30;
+      const FRAME_INTERVAL = 1000 / FRAME_RATE;
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let activeStream = null;
+      let isRecording = false;
+      let renderToken = 0;
+      let captureScale = 1;
+      let lastRecordingUrl = '';
+
+      function setActiveRatio(ratio) {
+        const ratioClass = `ratio-${ratio}`;
+        if (!slotFrame.classList.contains(ratioClass)) {
+          slotFrame.classList.remove('ratio-9-16', 'ratio-1-1');
+          slotFrame.classList.add(ratioClass);
+        }
+
+        formatButtons.forEach((button) => {
+          button.classList.toggle('active', button.dataset.ratio === ratio);
+        });
+
+        if (isRecording) {
+          stopRenderLoop();
+          window.requestAnimationFrame(() => {
+            prepareCanvas();
+            startRenderLoop();
+          });
+        }
+      }
+
+      formatButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const { ratio } = button.dataset;
+          setActiveRatio(ratio);
+        });
+      });
+
+      setActiveRatio(slotFrame.classList.contains('ratio-1-1') ? '1-1' : '9-16');
+
+      function prepareCanvas() {
+        const rect = slotFrame.getBoundingClientRect();
+        captureScale = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+        recordCanvas.width = Math.round(rect.width * captureScale);
+        recordCanvas.height = Math.round(rect.height * captureScale);
+        const context = recordCanvas.getContext('2d');
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+      }
+
+      function stopRenderLoop() {
+        renderToken += 1;
+      }
+
+      function startRenderLoop() {
+        const token = ++renderToken;
+
+        const renderFrame = async () => {
+          if (!isRecording || token !== renderToken) {
+            return;
+          }
+
+          try {
+            await window.html2canvas(slotFrame, {
+              canvas: recordCanvas,
+              backgroundColor: null,
+              scale: captureScale,
+              logging: false,
+              useCORS: true,
+              removeContainer: true,
+            });
+          } catch (error) {
+            console.error('Failed to render slot frame', error);
+            stopRecording(true);
+            statusLabel.textContent = 'Rendering error. Recording stopped.';
+            return;
+          }
+
+          if (!isRecording || token !== renderToken) {
+            return;
+          }
+
+          setTimeout(renderFrame, FRAME_INTERVAL);
+        };
+
+        renderFrame();
+      }
+
+      async function startRecording() {
+        if (typeof window.html2canvas !== 'function') {
+          statusLabel.textContent = 'Capture tool failed to load.';
+          return;
+        }
+
+        recordedChunks = [];
+        if (lastRecordingUrl) {
+          URL.revokeObjectURL(lastRecordingUrl);
+          lastRecordingUrl = '';
+        }
+        recordingPreview.hidden = true;
+        recordingPreview.pause();
+        downloadLink.hidden = true;
+        recordButton.disabled = true;
+        statusLabel.textContent = 'Preparing capture…';
+
+        await new Promise((resolve) => {
+          window.requestAnimationFrame(() => {
+            prepareCanvas();
+            resolve();
+          });
+        });
+
+        const stream = recordCanvas.captureStream(FRAME_RATE);
+        activeStream = stream;
+
+        const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+          ? 'video/webm;codecs=vp9'
+          : 'video/webm;codecs=vp8';
+
+        try {
+          mediaRecorder = new MediaRecorder(stream, {
+            mimeType,
+            videoBitsPerSecond: 8000000,
+          });
+        } catch (error) {
+          console.error('Failed to create MediaRecorder', error);
+          statusLabel.textContent = 'Recording is not supported in this browser.';
+          recordButton.disabled = false;
+          return;
+        }
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          if (lastRecordingUrl) {
+            URL.revokeObjectURL(lastRecordingUrl);
+            lastRecordingUrl = '';
+          }
+
+          const blob = new Blob(recordedChunks, { type: 'video/webm' });
+          const url = URL.createObjectURL(blob);
+          lastRecordingUrl = url;
+
+          recordingPreview.src = url;
+          recordingPreview.hidden = false;
+          recordingPreview.load();
+          downloadLink.href = url;
+          downloadLink.hidden = false;
+          statusLabel.textContent =
+            'Recording finished. You can download the file.';
+
+          if (activeStream) {
+            activeStream.getTracks().forEach((track) => track.stop());
+            activeStream = null;
+          }
+
+          mediaRecorder = null;
+          recordButton.textContent = 'Start recording';
+          recordButton.disabled = false;
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordButton.textContent = 'Stop recording';
+        recordButton.disabled = false;
+        statusLabel.textContent = 'Recording…';
+        startRenderLoop();
+      }
+
+      function stopRecording(force = false) {
+        if (!mediaRecorder) {
+          if (force) {
+            isRecording = false;
+            stopRenderLoop();
+            if (activeStream) {
+              activeStream.getTracks().forEach((track) => track.stop());
+              activeStream = null;
+            }
+            recordButton.textContent = 'Start recording';
+            recordButton.disabled = false;
+          }
+          return;
+        }
+
+        isRecording = false;
+        stopRenderLoop();
+
+        if (mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      }
+
+      recordButton.addEventListener('click', () => {
+        if (isRecording) {
+          stopRecording();
+          return;
+        }
+
+        startRecording();
+      });
+
+      window.addEventListener('beforeunload', () => {
+        if (lastRecordingUrl) {
+          URL.revokeObjectURL(lastRecordingUrl);
+        }
+      });
+    </script>
+  </body>
+</html>
