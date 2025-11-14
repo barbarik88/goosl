@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gates of Olympus — slot capture</title>
+    <title>Slot capture — Gates of Olympus &amp; Mega Strike</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -97,9 +97,59 @@
         gap: clamp(1.2rem, 2vw, 1.8rem);
       }
 
+      .slot-switcher {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 12px 30px rgba(30, 0, 60, 0.35);
+        backdrop-filter: blur(8px);
+      }
+
+      .slot-button {
+        position: relative;
+        padding: 0.55rem 1.35rem;
+        border-radius: 999px;
+        border: none;
+        font-family: 'Bebas Neue', 'Montserrat', sans-serif;
+        font-size: 1.15rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+        background: linear-gradient(140deg, rgba(62, 20, 125, 0.82), rgba(146, 70, 226, 0.82));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        cursor: pointer;
+        transition: transform 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .slot-button::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+        pointer-events: none;
+      }
+
+      .slot-button:hover {
+        transform: translateY(-2px);
+        color: #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 12px 24px rgba(42, 0, 82, 0.35);
+      }
+
+      .slot-button.active {
+        color: #1b0f3f;
+        background: linear-gradient(140deg, #ffd44f, #ff8f3c, #ff4fb0);
+        box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.65), 0 16px 36px rgba(54, 0, 84, 0.45);
+      }
+
       .slot-frame {
         position: relative;
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         padding: clamp(1.1rem, 2.5vw, 1.8rem);
@@ -140,6 +190,10 @@
         --bolt-right-offset: clamp(6%, 7vw, 11%);
         --bolt-left-bottom: clamp(12%, 14vw, 20%);
         --bolt-right-bottom: clamp(18%, 12vw, 18%);
+      }
+
+      .slot-frame.active {
+        display: flex;
       }
 
       .slot-frame::after {
@@ -568,6 +622,520 @@
         animation: pulse 3.4s ease-in-out infinite;
       }
 
+      .slot-frame.slot-mega {
+        padding: clamp(0.9rem, 2.4vw, 1.4rem);
+        border-radius: clamp(28px, 5vw, 40px);
+        background:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(120, 198, 255, 0.35) 0%,
+            rgba(14, 47, 198, 0.25) 38%,
+            rgba(4, 12, 74, 0.9) 100%
+          );
+        box-shadow:
+          0 28px 60px rgba(8, 0, 64, 0.55),
+          inset 0 3px 12px rgba(255, 255, 255, 0.35);
+        --mega-padding-top: clamp(1.1rem, 2.4vw, 1.6rem);
+        --mega-padding-x: clamp(1rem, 2.2vw, 1.4rem);
+        --mega-padding-bottom: clamp(1.3rem, 2.6vw, 1.8rem);
+        --mega-section-gap: clamp(0.9rem, 2vw, 1.4rem);
+        --mega-logo-size: clamp(2.4rem, 4.4vw, 3.1rem);
+        --mega-sub-size: clamp(0.85rem, 1.6vw, 1.1rem);
+        --mega-character-size: clamp(3.6rem, 6vw, 4.4rem);
+        --mega-coin-size: clamp(4.6rem, 9vw, 6.2rem);
+        --mega-coin-gap: clamp(0.55rem, 1.5vw, 0.9rem);
+        --mega-jackpot-font: clamp(0.72rem, 1.4vw, 1rem);
+        --mega-footer-font: clamp(0.95rem, 1.8vw, 1.2rem);
+      }
+
+      .slot-frame.slot-mega::after {
+        content: '';
+        position: absolute;
+        inset: -8% -10% -12%;
+        background: radial-gradient(
+          circle at 50% 20%,
+          rgba(130, 220, 255, 0.55) 0%,
+          rgba(53, 120, 255, 0.35) 32%,
+          rgba(4, 0, 68, 0) 65%
+        );
+        filter: blur(42px);
+        z-index: -1;
+      }
+
+      .slot-frame.slot-mega.ratio-9-16 {
+        width: clamp(270px, 28vw, 360px);
+        aspect-ratio: 9 / 16;
+      }
+
+      .slot-frame.slot-mega.ratio-1-1 {
+        width: clamp(320px, 34vw, 420px);
+        aspect-ratio: 1 / 1;
+        --mega-padding-top: clamp(0.9rem, 2.2vw, 1.3rem);
+        --mega-padding-x: clamp(0.9rem, 2.2vw, 1.2rem);
+        --mega-padding-bottom: clamp(1rem, 2.4vw, 1.5rem);
+        --mega-section-gap: clamp(0.75rem, 1.8vw, 1.15rem);
+        --mega-logo-size: clamp(2.1rem, 4.2vw, 2.8rem);
+        --mega-character-size: clamp(4.1rem, 7.5vw, 5.2rem);
+        --mega-coin-size: clamp(5.4rem, 11vw, 7.4rem);
+      }
+
+      .slot-frame.slot-mega .mega-frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--mega-section-gap);
+        padding: var(--mega-padding-top) var(--mega-padding-x)
+          var(--mega-padding-bottom);
+        border-radius: clamp(24px, 4vw, 32px);
+        background:
+          linear-gradient(180deg, rgba(25, 76, 255, 0.95) 0%, rgba(11, 23, 129, 0.95) 48%,
+            rgba(6, 4, 66, 0.95) 100%);
+        box-shadow:
+          inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+          inset 0 -32px 52px rgba(0, 0, 60, 0.55);
+        overflow: hidden;
+        color: #fff7ff;
+        text-transform: uppercase;
+      }
+
+      .slot-frame.slot-mega .mega-frame::before {
+        content: '';
+        position: absolute;
+        inset: -18% -20% 40% -20%;
+        background:
+          radial-gradient(
+            circle at 50% 40%,
+            rgba(255, 227, 138, 0.4) 0%,
+            rgba(255, 152, 40, 0.25) 45%,
+            rgba(255, 88, 24, 0) 75%
+          );
+        opacity: 0.8;
+        filter: blur(20px);
+        pointer-events: none;
+      }
+
+      .slot-frame.slot-mega .mega-frame::after {
+        content: '';
+        position: absolute;
+        inset: 42% -30% -40% -30%;
+        background:
+          radial-gradient(
+            circle at 50% 70%,
+            rgba(54, 158, 255, 0.35) 0%,
+            rgba(10, 22, 138, 0.6) 55%,
+            rgba(4, 4, 54, 0.85) 100%
+          );
+        filter: blur(30px);
+        pointer-events: none;
+      }
+
+      .mega-top {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        z-index: 1;
+      }
+
+      .mega-payments {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.4rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(8, 12, 76, 0.7);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(6px);
+      }
+
+      .mega-pay-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(2.1rem, 4vw, 2.8rem);
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: clamp(0.68rem, 1.25vw, 0.9rem);
+        letter-spacing: 0.08em;
+        color: #0a1048;
+        text-transform: none;
+        background:
+          linear-gradient(145deg, rgba(255, 240, 170, 0.95), rgba(255, 185, 69, 0.95));
+        box-shadow:
+          0 6px 14px rgba(0, 0, 0, 0.35),
+          inset 0 2px 4px rgba(255, 255, 255, 0.6);
+        animation: floatIcon 5s ease-in-out infinite;
+      }
+
+      .mega-pay-visa {
+        background: linear-gradient(145deg, #ffffff, #dfe6ff);
+        color: #1a1f71;
+      }
+
+      .mega-pay-apple {
+        background: linear-gradient(145deg, #ffffff, #ebeff9);
+        color: #000;
+        font-weight: 800;
+      }
+
+      .mega-pay-n {
+        background: linear-gradient(145deg, #2c2bff, #a072ff);
+        color: #fff;
+      }
+
+      .mega-pay-coin {
+        background: linear-gradient(145deg, #fff6d2, #ffc24a);
+        font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      }
+
+      .mega-pay-master {
+        background: linear-gradient(145deg, #ff8f70, #ff4f3c);
+        color: #fff9f7;
+        font-size: clamp(0.6rem, 1.1vw, 0.8rem);
+      }
+
+      .mega-pay-icon:nth-child(2) {
+        font-family: 'SF Pro Text', 'Montserrat', sans-serif;
+        animation-delay: -1.2s;
+      }
+
+      .mega-pay-icon:nth-child(3) {
+        animation-delay: -2.4s;
+      }
+
+      .mega-pay-icon:nth-child(4) {
+        animation-delay: -3.6s;
+      }
+
+      .mega-pay-icon:nth-child(5) {
+        animation-delay: -4.8s;
+      }
+
+      .mega-balances {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .mega-balance-tag {
+        display: grid;
+        gap: 0.15rem;
+        padding: 0.45rem 0.75rem;
+        border-radius: 12px;
+        background:
+          linear-gradient(160deg, rgba(255, 220, 120, 0.95), rgba(255, 153, 40, 0.95));
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+        text-align: center;
+        animation: pulse 3.2s ease-in-out infinite;
+      }
+
+      .mega-balance-tag:nth-child(2) {
+        background: linear-gradient(160deg, rgba(94, 215, 255, 0.95), rgba(12, 108, 255, 0.95));
+        animation-delay: -1.4s;
+      }
+
+      .mega-balance-label {
+        font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+        letter-spacing: 0.1em;
+        color: rgba(6, 10, 52, 0.9);
+      }
+
+      .mega-balance-value {
+        font-weight: 800;
+        font-size: clamp(0.92rem, 1.8vw, 1.3rem);
+        color: rgba(6, 10, 52, 0.95);
+      }
+
+      .mega-logo-group {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: clamp(0.6rem, 2vw, 1rem);
+        z-index: 1;
+      }
+
+      .mega-character {
+        position: relative;
+        width: var(--mega-character-size);
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 30% 30%, #fff5c9 0%, #ffd35a 55%, #ffa115 100%);
+        box-shadow:
+          inset 0 0 0 3px rgba(255, 255, 255, 0.6),
+          0 12px 30px rgba(0, 0, 0, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: bounceCharacter 3.2s ease-in-out infinite;
+      }
+
+      .mega-character-right {
+        animation-delay: -1.6s;
+      }
+
+      .mega-character-face {
+        position: relative;
+        width: 55%;
+        height: 55%;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffeccd 0%, #ffb861 75%);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65);
+      }
+
+      .mega-character-face::before,
+      .mega-character-face::after {
+        content: '';
+        position: absolute;
+        top: 40%;
+        width: 18%;
+        height: 22%;
+        border-radius: 50%;
+        background: #0b0a3d;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.35);
+      }
+
+      .mega-character-face::before {
+        left: 25%;
+      }
+
+      .mega-character-face::after {
+        right: 25%;
+      }
+
+      .mega-character-spark {
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+        mix-blend-mode: screen;
+        animation: sparkleRotate 4.4s linear infinite;
+      }
+
+      .mega-logo-text {
+        text-align: center;
+        text-shadow:
+          0 6px 16px rgba(0, 0, 0, 0.6),
+          0 0 28px rgba(255, 210, 110, 0.75);
+      }
+
+      .mega-logo-main {
+        display: block;
+        font-family: 'Cinzel Decorative', 'Bebas Neue', sans-serif;
+        font-size: var(--mega-logo-size);
+        letter-spacing: 0.28em;
+      }
+
+      .mega-logo-sub {
+        display: block;
+        font-family: 'Bebas Neue', 'Montserrat', sans-serif;
+        font-size: var(--mega-sub-size);
+        letter-spacing: 0.32em;
+        margin-top: 0.2rem;
+      }
+
+      .mega-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--mega-coin-gap);
+        z-index: 1;
+      }
+
+      .mega-column {
+        display: grid;
+        gap: var(--mega-coin-gap);
+        align-content: center;
+        justify-items: center;
+      }
+
+      .mega-column-center {
+        transform: translateY(-4%);
+      }
+
+      .mega-coin {
+        position: relative;
+        width: var(--mega-coin-size);
+        height: var(--mega-coin-size);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        text-transform: uppercase;
+        font-family: 'Bebas Neue', 'Montserrat', sans-serif;
+        letter-spacing: 0.18em;
+        line-height: 1;
+        padding: 0.6rem;
+        box-shadow:
+          0 14px 28px rgba(0, 0, 0, 0.45),
+          inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+        animation: megaCoinPulse 3.6s ease-in-out infinite;
+      }
+
+      .mega-coin::before {
+        content: '';
+        position: absolute;
+        inset: 12%;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.45);
+        opacity: 0.8;
+      }
+
+      .mega-coin::after {
+        content: '';
+        position: absolute;
+        top: 18%;
+        left: 18%;
+        width: 24%;
+        height: 24%;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.65);
+        filter: blur(4px);
+        opacity: 0.6;
+      }
+
+      .mega-coin-multiplier {
+        font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+      }
+
+      .mega-coin-caption {
+        font-size: clamp(0.66rem, 1.4vw, 0.98rem);
+        letter-spacing: 0.14em;
+      }
+
+      .mega-coin-purple {
+        background: linear-gradient(145deg, #ffdba8, #f7a648 40%, #a152ff 100%);
+      }
+
+      .mega-coin-indigo {
+        background: linear-gradient(145deg, #ffe58f, #f09b30 35%, #5426ff 100%);
+      }
+
+      .mega-coin-gold {
+        background: linear-gradient(145deg, #fff5ca, #ffd24f 55%, #ff8a2b 100%);
+        color: #5b2c00;
+      }
+
+      .mega-coin-blue {
+        background: linear-gradient(145deg, #c0f2ff, #4cc4ff 60%, #2440ff 100%);
+      }
+
+      .mega-coin-jackpot {
+        background: radial-gradient(circle at 50% 30%, #fffcc7 0%, #ffd95a 42%, #f15e00 100%);
+        color: #4a1900;
+        animation-duration: 2.6s;
+      }
+
+      .mega-coin-turquoise {
+        background: linear-gradient(145deg, #d1fff7, #58ffd9 55%, #0b9cc1 100%);
+      }
+
+      .mega-coin-green {
+        background: linear-gradient(145deg, #e2ffe2, #58ffa2 55%, #018b52 100%);
+        color: #033019;
+      }
+
+      .mega-coin-orange {
+        background: linear-gradient(145deg, #ffe4cf, #ff9b4c 55%, #dd2f00 100%);
+      }
+
+      .mega-coin-violet {
+        background: linear-gradient(145deg, #f8d8ff, #ad74ff 55%, #5405a5 100%);
+      }
+
+      .mega-jackpots {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+        z-index: 1;
+      }
+
+      .mega-jackpot {
+        display: grid;
+        gap: 0.25rem;
+        padding: 0.55rem 0.7rem;
+        border-radius: 16px;
+        text-align: center;
+        font-size: var(--mega-jackpot-font);
+        letter-spacing: 0.14em;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+        animation: pulse 3.6s ease-in-out infinite;
+      }
+
+      .mega-jackpot:nth-child(2) {
+        animation-delay: -1.2s;
+      }
+
+      .mega-jackpot:nth-child(3) {
+        animation-delay: -2.4s;
+      }
+
+      .mega-jackpot:nth-child(4) {
+        animation-delay: -3.6s;
+      }
+
+      .mega-jackpot-label {
+        font-weight: 800;
+      }
+
+      .mega-jackpot-value {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+      }
+
+      .mega-jackpot-grand {
+        background: linear-gradient(150deg, #ffecb0, #ffae3b 55%, #fa3d8a 100%);
+        color: #4f0645;
+      }
+
+      .mega-jackpot-minor {
+        background: linear-gradient(150deg, #ffe7ff, #ff78ff 55%, #632cff 100%);
+      }
+
+      .mega-jackpot-major {
+        background: linear-gradient(150deg, #e3f7ff, #69caff 60%, #243dff 100%);
+      }
+
+      .mega-jackpot-mini {
+        background: linear-gradient(150deg, #f3ffe3, #8bff84 60%, #0a9b46 100%);
+        color: #043c1a;
+      }
+
+      .mega-footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+        z-index: 1;
+      }
+
+      .mega-bonus-card,
+      .mega-timer {
+        padding: 0.65rem 1.2rem;
+        border-radius: 18px;
+        font-weight: 800;
+        font-size: var(--mega-footer-font);
+        letter-spacing: 0.18em;
+        background:
+          linear-gradient(150deg, rgba(255, 234, 150, 0.95), rgba(255, 160, 50, 0.95));
+        color: #3a1060;
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+        animation: megaButtonPulse 3.6s ease-in-out infinite;
+      }
+
+      .mega-timer {
+        min-width: clamp(5rem, 10vw, 6.5rem);
+        text-align: center;
+        background: linear-gradient(150deg, rgba(122, 222, 255, 0.95), rgba(54, 128, 255, 0.95));
+        color: #04124a;
+        animation-delay: -1.6s;
+      }
+
       .control-panel {
         width: min(380px, 92vw);
         display: grid;
@@ -775,6 +1343,71 @@
         }
       }
 
+      @keyframes floatIcon {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-8%);
+        }
+      }
+
+      @keyframes bounceCharacter {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-6%) scale(1.04);
+        }
+      }
+
+      @keyframes sparkleRotate {
+        0% {
+          transform: rotate(0deg) scale(1);
+          opacity: 0.85;
+        }
+
+        50% {
+          transform: rotate(180deg) scale(1.08);
+          opacity: 1;
+        }
+
+        100% {
+          transform: rotate(360deg) scale(1);
+          opacity: 0.85;
+        }
+      }
+
+      @keyframes megaCoinPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 12px rgba(255, 210, 130, 0.7));
+        }
+
+        50% {
+          transform: scale(1.06);
+          filter: drop-shadow(0 0 26px rgba(255, 210, 130, 0.95));
+        }
+      }
+
+      @keyframes megaButtonPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 10px rgba(255, 220, 160, 0.7));
+        }
+
+        50% {
+          transform: scale(1.04);
+          filter: drop-shadow(0 0 22px rgba(255, 220, 160, 0.95));
+        }
+      }
+
       @media (max-width: 960px) {
         .layout {
           grid-template-columns: 1fr;
@@ -803,6 +1436,10 @@
           padding: clamp(0.9rem, 4vw, 1.2rem);
         }
 
+        .slot-frame.slot-mega {
+          padding: clamp(0.7rem, 4.5vw, 1rem);
+        }
+
         .slot-border {
           padding: clamp(1.2rem, 5vw, 1.6rem)
             clamp(1rem, 4vw, 1.4rem) clamp(1.8rem, 6vw, 2.3rem);
@@ -810,6 +1447,20 @@
 
         .promo-card {
           width: 100%;
+        }
+
+        .slot-frame.slot-mega .mega-frame {
+          gap: clamp(0.7rem, 3vw, 1rem);
+          padding: clamp(0.8rem, 4vw, 1.1rem) clamp(0.7rem, 4vw, 1.1rem)
+            clamp(1rem, 4vw, 1.4rem);
+        }
+
+        .mega-jackpots {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .mega-footer {
+          flex-direction: column;
         }
       }
     </style>
@@ -819,10 +1470,49 @@
     <div class="background-glow" aria-hidden="true"></div>
     <div class="layout">
       <section class="stage">
-        <div id="slotFrame" class="slot-frame ratio-9-16" aria-labelledby="game-title">
+        <div
+          class="slot-switcher"
+          role="tablist"
+          aria-label="Select slot presentation"
+        >
+          <button
+            type="button"
+            class="slot-button active"
+            data-slot="olympus"
+            role="tab"
+            id="slot-tab-olympus"
+            aria-controls="slot-panel-olympus"
+            aria-selected="true"
+          >
+            Gates of Olympus
+          </button>
+          <button
+            type="button"
+            class="slot-button"
+            data-slot="mega-strike"
+            role="tab"
+            id="slot-tab-mega"
+            aria-controls="slot-panel-mega"
+            aria-selected="false"
+          >
+            Mega Strike
+          </button>
+        </div>
+
+        <section
+          id="slot-panel-olympus"
+          class="slot-frame slot-olympus ratio-9-16 active"
+          data-slot="olympus"
+          role="tabpanel"
+          aria-labelledby="slot-tab-olympus"
+        >
           <div class="slot-border">
-            <main id="gameplay" class="slot-scene">
-              <header class="logo" id="game-title" aria-label="Gates of Olympus slot title">
+            <main id="olympus-gameplay" class="slot-scene">
+              <header
+                class="logo"
+                id="olympus-title"
+                aria-label="Gates of Olympus slot title"
+              >
                 <span class="logo-top">GATES OF</span>
                 <span class="logo-bottom">OLYMPUS</span>
               </header>
@@ -877,7 +1567,123 @@
               </section>
             </main>
           </div>
-        </div>
+        </section>
+
+        <section
+          id="slot-panel-mega"
+          class="slot-frame slot-mega ratio-9-16"
+          data-slot="mega-strike"
+          role="tabpanel"
+          aria-labelledby="slot-tab-mega"
+          hidden
+        >
+          <div class="mega-frame">
+            <header class="mega-top" aria-label="Accepted payments and balances">
+              <div class="mega-payments" role="presentation">
+                <span class="mega-pay-icon mega-pay-visa" aria-hidden="true">VISA</span>
+                <span class="mega-pay-icon mega-pay-apple" aria-hidden="true">Pay</span>
+                <span class="mega-pay-icon mega-pay-n" aria-hidden="true">N</span>
+                <span class="mega-pay-icon mega-pay-coin" aria-hidden="true">🪙</span>
+                <span class="mega-pay-icon mega-pay-master" aria-hidden="true">Mastercard</span>
+              </div>
+              <div class="mega-balances">
+                <div class="mega-balance-tag" aria-label="Bonus balance">
+                  <span class="mega-balance-label">Bonus</span>
+                  <span class="mega-balance-value">1500€</span>
+                </div>
+                <div class="mega-balance-tag" aria-label="Free spins">
+                  <span class="mega-balance-label">FS</span>
+                  <span class="mega-balance-value">150</span>
+                </div>
+              </div>
+            </header>
+
+            <section class="mega-jackpots" aria-label="Jackpot values">
+              <div class="mega-jackpot mega-jackpot-grand">
+                <span class="mega-jackpot-label">GRAND</span>
+                <span class="mega-jackpot-value">56,160,943.05</span>
+              </div>
+              <div class="mega-jackpot mega-jackpot-minor">
+                <span class="mega-jackpot-label">MINOR</span>
+                <span class="mega-jackpot-value">496,327.03</span>
+              </div>
+              <div class="mega-jackpot mega-jackpot-major">
+                <span class="mega-jackpot-label">MAJOR</span>
+                <span class="mega-jackpot-value">5,877,431.05</span>
+              </div>
+              <div class="mega-jackpot mega-jackpot-mini">
+                <span class="mega-jackpot-label">MINI</span>
+                <span class="mega-jackpot-value">81,787.14</span>
+              </div>
+            </section>
+
+            <div class="mega-logo-group" aria-label="Coin Strike branding">
+              <div class="mega-character">
+                <span class="mega-character-face" aria-hidden="true"></span>
+                <span class="mega-character-spark" aria-hidden="true"></span>
+              </div>
+              <div class="mega-logo-text">
+                <span class="mega-logo-main">COIN STRIKE</span>
+                <span class="mega-logo-sub">HOLD AND WIN 3×3</span>
+              </div>
+              <div class="mega-character mega-character-right">
+                <span class="mega-character-face" aria-hidden="true"></span>
+                <span class="mega-character-spark" aria-hidden="true"></span>
+              </div>
+            </div>
+
+            <section class="mega-grid" aria-label="Current reel outcomes">
+              <div class="mega-column">
+                <div class="mega-coin mega-coin-purple" data-label="X2 Multiplier">
+                  <span class="mega-coin-multiplier">X2</span>
+                  <span class="mega-coin-caption">Multiplier</span>
+                </div>
+                <div class="mega-coin mega-coin-gold" data-label="Win €0">
+                  <span class="mega-coin-multiplier">Win</span>
+                  <span class="mega-coin-caption">€0</span>
+                </div>
+                <div class="mega-coin mega-coin-indigo" data-label="X5 Multiplier">
+                  <span class="mega-coin-multiplier">X5</span>
+                  <span class="mega-coin-caption">Multiplier</span>
+                </div>
+              </div>
+              <div class="mega-column mega-column-center">
+                <div class="mega-coin mega-coin-blue" data-label="X2 Multiplier">
+                  <span class="mega-coin-multiplier">X2</span>
+                  <span class="mega-coin-caption">Multiplier</span>
+                </div>
+                <div class="mega-coin mega-coin-jackpot" data-label="X150 Euro">
+                  <span class="mega-coin-multiplier">X150</span>
+                  <span class="mega-coin-caption">1 EURO</span>
+                </div>
+                <div class="mega-coin mega-coin-turquoise" data-label="X20 Multiplier">
+                  <span class="mega-coin-multiplier">X20</span>
+                  <span class="mega-coin-caption">Multiplier</span>
+                </div>
+              </div>
+              <div class="mega-column">
+                <div class="mega-coin mega-coin-green" data-label="Mini prize">
+                  <span class="mega-coin-multiplier">MINI</span>
+                  <span class="mega-coin-caption">81,787.14</span>
+                </div>
+                <div class="mega-coin mega-coin-orange" data-label="X200 Multiplier">
+                  <span class="mega-coin-multiplier">X200</span>
+                  <span class="mega-coin-caption">Multiplier</span>
+                </div>
+                <div class="mega-coin mega-coin-violet" data-label="Multiplier X0">
+                  <span class="mega-coin-multiplier">Multiplier</span>
+                  <span class="mega-coin-caption">X0</span>
+                </div>
+              </div>
+            </section>
+
+            <footer class="mega-footer">
+              <div class="mega-bonus-card" aria-label="Bonus total">Bonus 1500€</div>
+              <div class="mega-timer" aria-label="Bonus timer">10:00</div>
+            </footer>
+          </div>
+        </section>
+
         <canvas id="recordCanvas" class="record-canvas" hidden></canvas>
       </section>
 
@@ -921,12 +1727,18 @@
       const statusLabel = document.getElementById('statusLabel');
       const recordingPreview = document.getElementById('recordingPreview');
       const downloadLink = document.getElementById('downloadLink');
-      const slotFrame = document.getElementById('slotFrame');
       const recordCanvas = document.getElementById('recordCanvas');
       const formatButtons = document.querySelectorAll('.format-button');
+      const slotButtons = Array.from(document.querySelectorAll('.slot-button'));
+      const slotFrames = Array.from(document.querySelectorAll('.slot-frame'));
 
       const FRAME_RATE = 30;
       const FRAME_INTERVAL = 1000 / FRAME_RATE;
+      const DOWNLOAD_NAMES = {
+        olympus: 'gate-of-olympus-gameplay.webm',
+        'mega-strike': 'mega-strike-gameplay.webm',
+      };
+
       let mediaRecorder = null;
       let recordedChunks = [];
       let activeStream = null;
@@ -934,13 +1746,68 @@
       let renderToken = 0;
       let captureScale = 1;
       let lastRecordingUrl = '';
+      let activeSlotId =
+        slotFrames.find((frame) => frame.classList.contains('active'))?.dataset.slot ||
+        slotFrames[0]?.dataset.slot ||
+        'olympus';
+      let currentRatio = '9-16';
+
+      function getActiveSlotFrame() {
+        return (
+          slotFrames.find((frame) => frame.dataset.slot === activeSlotId) ||
+          slotFrames[0] ||
+          null
+        );
+      }
+
+      function updateDownloadName() {
+        const fallback = `${activeSlotId}-capture.webm`;
+        downloadLink.download = DOWNLOAD_NAMES[activeSlotId] || fallback;
+      }
+
+      function syncSlotTabs() {
+        slotButtons.forEach((button) => {
+          const isActive = button.dataset.slot === activeSlotId;
+          button.classList.toggle('active', isActive);
+          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          button.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+
+        slotFrames.forEach((frame) => {
+          const isActive = frame.dataset.slot === activeSlotId;
+          frame.classList.toggle('active', isActive);
+          frame.toggleAttribute('hidden', !isActive);
+        });
+      }
+
+      function setActiveSlot(slotId) {
+        if (slotId === activeSlotId) {
+          return;
+        }
+
+        const wasRecording = isRecording;
+        if (wasRecording) {
+          stopRecording(true);
+          statusLabel.textContent = 'Recording stopped — slot changed.';
+        }
+
+        activeSlotId = slotId;
+        syncSlotTabs();
+        updateDownloadName();
+        if (!wasRecording) {
+          statusLabel.textContent = 'Ready to record';
+        }
+        window.requestAnimationFrame(() => {
+          prepareCanvas();
+        });
+      }
 
       function setActiveRatio(ratio) {
-        const ratioClass = `ratio-${ratio}`;
-        if (!slotFrame.classList.contains(ratioClass)) {
-          slotFrame.classList.remove('ratio-9-16', 'ratio-1-1');
-          slotFrame.classList.add(ratioClass);
-        }
+        currentRatio = ratio;
+        slotFrames.forEach((frame) => {
+          frame.classList.remove('ratio-9-16', 'ratio-1-1');
+          frame.classList.add(`ratio-${ratio}`);
+        });
 
         formatButtons.forEach((button) => {
           button.classList.toggle('active', button.dataset.ratio === ratio);
@@ -949,29 +1816,33 @@
         if (isRecording) {
           stopRenderLoop();
           window.requestAnimationFrame(() => {
-            prepareCanvas();
-            startRenderLoop();
+            if (prepareCanvas()) {
+              startRenderLoop();
+            }
           });
+        } else {
+          prepareCanvas();
         }
       }
 
-      formatButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-          const { ratio } = button.dataset;
-          setActiveRatio(ratio);
-        });
-      });
-
-      setActiveRatio(slotFrame.classList.contains('ratio-1-1') ? '1-1' : '9-16');
-
       function prepareCanvas() {
-        const rect = slotFrame.getBoundingClientRect();
+        const frame = getActiveSlotFrame();
+        if (!frame) {
+          return false;
+        }
+
+        const rect = frame.getBoundingClientRect();
+        if (!rect.width || !rect.height) {
+          return false;
+        }
+
         captureScale = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
         recordCanvas.width = Math.round(rect.width * captureScale);
         recordCanvas.height = Math.round(rect.height * captureScale);
         const context = recordCanvas.getContext('2d');
         context.imageSmoothingEnabled = true;
         context.imageSmoothingQuality = 'high';
+        return true;
       }
 
       function stopRenderLoop() {
@@ -979,6 +1850,11 @@
       }
 
       function startRenderLoop() {
+        const frame = getActiveSlotFrame();
+        if (!frame) {
+          return;
+        }
+
         const token = ++renderToken;
 
         const renderFrame = async () => {
@@ -987,7 +1863,7 @@
           }
 
           try {
-            await window.html2canvas(slotFrame, {
+            await window.html2canvas(frame, {
               canvas: recordCanvas,
               backgroundColor: null,
               scale: captureScale,
@@ -1029,12 +1905,17 @@
         recordButton.disabled = true;
         statusLabel.textContent = 'Preparing capture…';
 
-        await new Promise((resolve) => {
+        const prepared = await new Promise((resolve) => {
           window.requestAnimationFrame(() => {
-            prepareCanvas();
-            resolve();
+            resolve(prepareCanvas());
           });
         });
+
+        if (!prepared) {
+          statusLabel.textContent = 'Slot is hidden. Choose a slot to capture.';
+          recordButton.disabled = false;
+          return;
+        }
 
         const stream = recordCanvas.captureStream(FRAME_RATE);
         activeStream = stream;
@@ -1108,6 +1989,7 @@
             }
             recordButton.textContent = 'Start recording';
             recordButton.disabled = false;
+            statusLabel.textContent = 'Ready to record';
           }
           return;
         }
@@ -1119,6 +2001,33 @@
           mediaRecorder.stop();
         }
       }
+
+      formatButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const { ratio } = button.dataset;
+          setActiveRatio(ratio);
+        });
+      });
+
+      slotButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          const { slot } = button.dataset;
+          setActiveSlot(slot);
+        });
+
+        button.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+            return;
+          }
+
+          event.preventDefault();
+          const direction = event.key === 'ArrowRight' ? 1 : -1;
+          const nextIndex = (index + direction + slotButtons.length) % slotButtons.length;
+          const nextButton = slotButtons[nextIndex];
+          nextButton.focus();
+          nextButton.click();
+        });
+      });
 
       recordButton.addEventListener('click', () => {
         if (isRecording) {
@@ -1134,6 +2043,12 @@
           URL.revokeObjectURL(lastRecordingUrl);
         }
       });
+
+      syncSlotTabs();
+      updateDownloadName();
+      const initialFrame = getActiveSlotFrame();
+      currentRatio = initialFrame?.classList.contains('ratio-1-1') ? '1-1' : '9-16';
+      setActiveRatio(currentRatio);
     </script>
   </body>
 </html>
