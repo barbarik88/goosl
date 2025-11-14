@@ -2,85 +2,212 @@ const recordButton = document.getElementById('recordButton');
 const statusLabel = document.getElementById('statusLabel');
 const recordingPreview = document.getElementById('recordingPreview');
 const downloadLink = document.getElementById('downloadLink');
+const slotFrame = document.getElementById('slotFrame');
+const recordCanvas = document.getElementById('recordCanvas');
+const formatButtons = document.querySelectorAll('.format-button');
 
+const FRAME_RATE = 30;
+const FRAME_INTERVAL = 1000 / FRAME_RATE;
 let mediaRecorder = null;
 let recordedChunks = [];
 let activeStream = null;
+let isRecording = false;
+let renderToken = 0;
+let captureScale = 1;
+let lastRecordingUrl = '';
+
+function setActiveRatio(ratio) {
+  const ratioClass = `ratio-${ratio}`;
+  if (!slotFrame.classList.contains(ratioClass)) {
+    slotFrame.classList.remove('ratio-9-16', 'ratio-1-1');
+    slotFrame.classList.add(ratioClass);
+  }
+
+  formatButtons.forEach((button) => {
+    button.classList.toggle('active', button.dataset.ratio === ratio);
+  });
+
+  if (isRecording) {
+    stopRenderLoop();
+    window.requestAnimationFrame(() => {
+      prepareCanvas();
+      startRenderLoop();
+    });
+  }
+}
+
+formatButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const { ratio } = button.dataset;
+    setActiveRatio(ratio);
+  });
+});
+
+setActiveRatio(slotFrame.classList.contains('ratio-1-1') ? '1-1' : '9-16');
+
+function prepareCanvas() {
+  const rect = slotFrame.getBoundingClientRect();
+  captureScale = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+  recordCanvas.width = Math.round(rect.width * captureScale);
+  recordCanvas.height = Math.round(rect.height * captureScale);
+  const context = recordCanvas.getContext('2d');
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+}
+
+function stopRenderLoop() {
+  renderToken += 1;
+}
+
+function startRenderLoop() {
+  const token = ++renderToken;
+
+  const renderFrame = async () => {
+    if (!isRecording || token !== renderToken) {
+      return;
+    }
+
+    try {
+      await window.html2canvas(slotFrame, {
+        canvas: recordCanvas,
+        backgroundColor: null,
+        scale: captureScale,
+        logging: false,
+        useCORS: true,
+        removeContainer: true,
+      });
+    } catch (error) {
+      console.error('Не удалось отрисовать кадр слота', error);
+      stopRecording(true);
+      statusLabel.textContent = 'Ошибка при рендере слота.';
+      return;
+    }
+
+    if (!isRecording || token !== renderToken) {
+      return;
+    }
+
+    setTimeout(renderFrame, FRAME_INTERVAL);
+  };
+
+  renderFrame();
+}
 
 async function startRecording() {
-  try {
-    recordedChunks = [];
-    statusLabel.textContent = 'Выберите вкладку для записи…';
+  if (typeof window.html2canvas !== 'function') {
+    statusLabel.textContent = 'Инструмент захвата не загрузился.';
+    return;
+  }
 
-    activeStream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        displaySurface: 'browser',
-        logicalSurface: true,
-        preferCurrentTab: true,
-        frameRate: 60,
-      },
-      audio: false,
+  recordedChunks = [];
+  if (lastRecordingUrl) {
+    URL.revokeObjectURL(lastRecordingUrl);
+    lastRecordingUrl = '';
+  }
+  recordingPreview.hidden = true;
+  recordingPreview.pause();
+  downloadLink.hidden = true;
+  recordButton.disabled = true;
+  statusLabel.textContent = 'Подготовка…';
+
+  await new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      prepareCanvas();
+      resolve();
     });
+  });
 
-    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-      ? 'video/webm;codecs=vp9'
-      : 'video/webm;codecs=vp8';
+  const stream = recordCanvas.captureStream(FRAME_RATE);
+  activeStream = stream;
 
-    mediaRecorder = new MediaRecorder(activeStream, { mimeType });
+  const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ? 'video/webm;codecs=vp9'
+    : 'video/webm;codecs=vp8';
 
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data && event.data.size > 0) {
-        recordedChunks.push(event.data);
-      }
-    };
+  try {
+    mediaRecorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 8_000_000,
+    });
+  } catch (error) {
+    console.error('Не удалось создать MediaRecorder', error);
+    statusLabel.textContent = 'Браузер не поддерживает запись.';
+    recordButton.disabled = false;
+    return;
+  }
 
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      recordingPreview.src = url;
-      recordingPreview.hidden = false;
-      downloadLink.href = url;
-      downloadLink.hidden = false;
-      statusLabel.textContent = 'Запись завершена. Можно скачать файл.';
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data && event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  };
 
+  mediaRecorder.onstop = () => {
+    if (lastRecordingUrl) {
+      URL.revokeObjectURL(lastRecordingUrl);
+      lastRecordingUrl = '';
+    }
+
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    lastRecordingUrl = url;
+
+    recordingPreview.src = url;
+    recordingPreview.hidden = false;
+    recordingPreview.load();
+    downloadLink.href = url;
+    downloadLink.hidden = false;
+    statusLabel.textContent = 'Запись завершена. Можно скачать файл.';
+
+    if (activeStream) {
+      activeStream.getTracks().forEach((track) => track.stop());
+      activeStream = null;
+    }
+
+    mediaRecorder = null;
+    recordButton.textContent = 'Начать запись';
+    recordButton.disabled = false;
+  };
+
+  mediaRecorder.start();
+  isRecording = true;
+  recordButton.textContent = 'Остановить запись';
+  recordButton.disabled = false;
+  statusLabel.textContent = 'Идет запись…';
+  startRenderLoop();
+}
+
+function stopRecording(force = false) {
+  if (!mediaRecorder) {
+    if (force) {
+      isRecording = false;
+      stopRenderLoop();
       if (activeStream) {
         activeStream.getTracks().forEach((track) => track.stop());
         activeStream = null;
       }
-    };
-
-    mediaRecorder.start();
-    statusLabel.textContent = 'Идет запись…';
-    recordButton.textContent = 'Остановить запись';
-  } catch (error) {
-    stopAndReset();
-    console.error('Не удалось начать запись', error);
-    statusLabel.textContent = 'Не удалось начать запись. Проверьте разрешения.';
+      recordButton.textContent = 'Начать запись';
+      recordButton.disabled = false;
+    }
+    return;
   }
-}
 
-function stopAndReset() {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+  isRecording = false;
+  stopRenderLoop();
+
+  if (mediaRecorder.state !== 'inactive') {
     mediaRecorder.stop();
-  } else if (activeStream) {
-    activeStream.getTracks().forEach((track) => track.stop());
-    activeStream = null;
   }
-
-  mediaRecorder = null;
-  recordButton.textContent = 'Начать запись';
 }
 
 recordButton.addEventListener('click', async () => {
-  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-    await startRecording();
+  if (isRecording) {
+    stopRecording();
   } else {
-    stopAndReset();
+    await startRecording();
   }
 });
 
 window.addEventListener('beforeunload', () => {
-  if (activeStream) {
-    activeStream.getTracks().forEach((track) => track.stop());
-  }
+  stopRecording(true);
 });

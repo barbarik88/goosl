@@ -11,73 +11,96 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
-    <script defer src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <div class="sky"></div>
-    <main id="gameplay" class="slot-scene" aria-labelledby="game-title">
-      <header class="logo" id="game-title">
-        <span class="logo-top">Gates of</span>
-        <span class="logo-bottom">OLYMPUS</span>
-      </header>
+    <div class="background-glow" aria-hidden="true"></div>
+    <div class="layout">
+      <section class="stage">
+        <div id="slotFrame" class="slot-frame ratio-9-16" aria-labelledby="game-title">
+          <div class="slot-border">
+            <main id="gameplay" class="slot-scene">
+              <header class="logo" id="game-title">
+                <span class="logo-top">Gates of</span>
+                <span class="logo-bottom">OLYMPUS</span>
+              </header>
 
-      <section class="hero">
-        <div class="zeus">
-          <div class="zeus-halo"></div>
-          <div class="zeus-body">
-            <div class="zeus-head"></div>
-            <div class="zeus-toga"></div>
-            <div class="zeus-arm zeus-arm-left"></div>
-            <div class="zeus-arm zeus-arm-right"></div>
+              <section class="hero" aria-hidden="true">
+                <div class="temple-columns"></div>
+                <div class="zeus">
+                  <div class="zeus-halo"></div>
+                  <div class="zeus-body">
+                    <div class="zeus-head"></div>
+                    <div class="zeus-toga"></div>
+                    <div class="zeus-arm zeus-arm-left"></div>
+                    <div class="zeus-arm zeus-arm-right"></div>
+                    <div class="zeus-belt"></div>
+                  </div>
+                </div>
+
+                <ul class="scatter-ring" aria-hidden="true">
+                  <li class="scatter">SCATTER</li>
+                  <li class="scatter">SCATTER</li>
+                  <li class="scatter">SCATTER</li>
+                  <li class="scatter">SCATTER</li>
+                  <li class="scatter">SCATTER</li>
+                  <li class="scatter">SCATTER</li>
+                </ul>
+              </section>
+
+              <section class="promo-card" aria-label="Специальное предложение">
+                <span class="promo-pretitle">ПОДАРОК</span>
+                <h1 class="promo-title">299 FREE SPINS</h1>
+                <p class="promo-subtitle">+1 SPECIAL SPIN</p>
+                <div class="divider"></div>
+                <p class="promo-footnote">FOR ALL NEW PLAYERS</p>
+                <div class="scatter-strip" aria-hidden="true">
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                </div>
+              </section>
+            </main>
           </div>
         </div>
-
-        <ul class="scatter-ring" aria-hidden="true">
-          <li class="scatter">SCATTER</li>
-          <li class="scatter">SCATTER</li>
-          <li class="scatter">SCATTER</li>
-          <li class="scatter">SCATTER</li>
-          <li class="scatter">SCATTER</li>
-          <li class="scatter">SCATTER</li>
-        </ul>
+        <canvas id="recordCanvas" class="record-canvas" hidden></canvas>
       </section>
 
-      <section class="promo-card" aria-label="Специальное предложение">
-        <span class="promo-pretitle">ПОДАРОК</span>
-        <h1 class="promo-title">299 FREE SPINS</h1>
-        <p class="promo-subtitle">+1 SPECIAL SPIN</p>
-        <div class="divider"></div>
-        <p class="promo-footnote">FOR ALL NEW PLAYERS</p>
-        <div class="scatter-strip" aria-hidden="true">
-          <div class="scatter-icon">SCATTER</div>
-          <div class="scatter-icon">SCATTER</div>
-          <div class="scatter-icon">SCATTER</div>
+      <aside class="control-panel">
+        <div class="format-controls" role="group" aria-label="Формат записи">
+          <button type="button" class="format-button active" data-ratio="9-16">
+            9 : 16
+          </button>
+          <button type="button" class="format-button" data-ratio="1-1">
+            1 : 1
+          </button>
         </div>
-      </section>
-    </main>
 
-    <footer class="controls">
-      <button id="recordButton" class="record-button" type="button">
-        Начать запись
-      </button>
-      <span id="statusLabel" class="status">Готов к записи</span>
-    </footer>
+        <div class="record-controls">
+          <button id="recordButton" class="record-button" type="button">
+            Начать запись
+          </button>
+          <span id="statusLabel" class="status">Готов к записи</span>
+        </div>
 
-    <section class="recording-output" aria-live="polite">
-      <video
-        id="recordingPreview"
-        class="recording-preview"
-        controls
-        playsinline
-        hidden
-      ></video>
-      <a
-        id="downloadLink"
-        class="download-link"
-        download="gate-of-olympus-gameplay.webm"
-        hidden
-        >Скачать запись</a
-      >
-    </section>
+        <section class="recording-output" aria-live="polite">
+          <video
+            id="recordingPreview"
+            class="recording-preview"
+            controls
+            playsinline
+            hidden
+          ></video>
+          <a
+            id="downloadLink"
+            class="download-link"
+            download="gate-of-olympus-gameplay.webm"
+            hidden
+            >Скачать запись</a
+          >
+        </section>
+      </aside>
+    </div>
   </body>
 </html>
