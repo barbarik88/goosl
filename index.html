@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gates of Olympus — slot capture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="background-glow" aria-hidden="true"></div>
+    <div class="layout">
+      <section class="stage">
+        <div id="slotFrame" class="slot-frame ratio-9-16" aria-labelledby="game-title">
+          <div class="slot-border">
+            <main id="gameplay" class="slot-scene">
+              <header class="logo" id="game-title" aria-label="Gates of Olympus slot title">
+                <span class="logo-top">GATES OF</span>
+                <span class="logo-bottom">OLYMPUS</span>
+              </header>
+
+              <section class="hero" aria-hidden="true">
+                <div class="hero-backdrop">
+                  <div class="backdrop-glow"></div>
+                  <div class="temple-crown"></div>
+                  <div class="temple-columns"></div>
+                </div>
+
+                <div class="scatter-cloud">
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                  <span class="scatter-pill">SCATTER</span>
+                </div>
+
+                <div class="zeus" role="img" aria-label="Animated Zeus unleashing lightning">
+                  <div class="zeus-shadow"></div>
+                  <div class="zeus-glow"></div>
+                  <div class="zeus-figure">
+                    <div class="zeus-head">
+                      <div class="zeus-hair"></div>
+                      <div class="zeus-face"></div>
+                      <div class="zeus-beard"></div>
+                    </div>
+                    <div class="zeus-body">
+                      <div class="zeus-toga"></div>
+                      <div class="zeus-belt"></div>
+                    </div>
+                    <div class="zeus-arm left">
+                      <div class="arm-core"></div>
+                    </div>
+                    <div class="zeus-arm right">
+                      <div class="arm-core"></div>
+                    </div>
+                  </div>
+                  <div class="lightning left" aria-hidden="true"></div>
+                  <div class="lightning right" aria-hidden="true"></div>
+                </div>
+              </section>
+
+              <section class="promo-card" aria-label="Welcome bonus">
+                <span class="promo-pretitle">LEGENDARY BONUS</span>
+                <h1 class="promo-title">299 FREE SPINS</h1>
+                <p class="promo-subtitle">+1 SPECIAL SPIN</p>
+                <div class="divider"></div>
+                <p class="promo-footnote">FOR ALL NEW PLAYERS</p>
+                <div class="scatter-strip" aria-hidden="true">
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                  <div class="scatter-icon">SCATTER</div>
+                </div>
+              </section>
+            </main>
+          </div>
+        </div>
+        <canvas id="recordCanvas" class="record-canvas" hidden></canvas>
+      </section>
+
+      <aside class="control-panel">
+        <div class="format-controls" role="group" aria-label="Recording aspect ratio">
+          <button type="button" class="format-button active" data-ratio="9-16">
+            9 : 16
+          </button>
+          <button type="button" class="format-button" data-ratio="1-1">
+            1 : 1
+          </button>
+        </div>
+
+        <div class="record-controls">
+          <button id="recordButton" class="record-button" type="button">
+            Start recording
+          </button>
+          <span id="statusLabel" class="status">Ready to record</span>
+        </div>
+
+        <section class="recording-output" aria-live="polite">
+          <video
+            id="recordingPreview"
+            class="recording-preview"
+            controls
+            playsinline
+            hidden
+          ></video>
+          <a
+            id="downloadLink"
+            class="download-link"
+            download="gate-of-olympus-gameplay.webm"
+            hidden
+            >Download recording</a
+          >
+        </section>
+      </aside>
+    </div>
+  </body>
+</html>
