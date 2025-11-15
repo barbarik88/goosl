@@ -8,7 +8,7 @@
   </head>
   <body>
     <div class="background-orbs" aria-hidden="true"></div>
-    <main class="app">
+    <main class="workspace">
       <header class="app-header">
         <h1 class="brand">Coin Strike Studio</h1>
         <button
@@ -20,90 +20,189 @@
           <span class="mute-icon" data-sound="on">🔊</span>
         </button>
       </header>
-      <section class="device-shell" aria-label="Coin Strike slot machine">
-        <div class="device-border">
-          <div class="device-screen">
-            <div class="payment-row" role="list" aria-label="Payment methods">
-              <span class="payment-badge">VISA</span>
-              <span class="payment-badge">Mastercard</span>
-              <span class="payment-badge">Apple&nbsp;Pay</span>
-              <span class="payment-badge">Google&nbsp;Pay</span>
-              <span class="payment-badge">PayPal</span>
-              <span class="payment-badge">Crypto</span>
-            </div>
-            <div class="counter-row">
-              <article class="counter-card" aria-live="polite">
-                <span class="counter-title">Bonus</span>
-                <span class="counter-value" data-counter-bonus>€1,500</span>
-              </article>
-              <article class="counter-card" aria-live="polite">
-                <span class="counter-title">Free Spins</span>
-                <span class="counter-value" data-counter-fs>150</span>
-              </article>
-            </div>
-            <div class="jackpot-row" role="group" aria-label="Jackpots">
-              <article class="jackpot-card grand">
-                <span class="jackpot-title">Grand</span>
-                <span class="jackpot-value" data-jackpot="grand"></span>
-              </article>
-              <article class="jackpot-card major">
-                <span class="jackpot-title">Major</span>
-                <span class="jackpot-value" data-jackpot="major"></span>
-              </article>
-              <article class="jackpot-card minor">
-                <span class="jackpot-title">Minor</span>
-                <span class="jackpot-value" data-jackpot="minor"></span>
-              </article>
-              <article class="jackpot-card mini">
-                <span class="jackpot-title">Mini</span>
-                <span class="jackpot-value" data-jackpot="mini"></span>
-              </article>
-            </div>
-            <div class="logo-stack">
-              <span class="logo-top">Coin</span>
-              <span class="logo-bottom">Strike</span>
-            </div>
-            <section
-              class="grid"
-              id="coin-grid"
-              role="grid"
-              aria-label="Hold and win board"
-            ></section>
-            <div class="status-strip">
-              <div class="status-item">
-                <span class="status-label">Bonus pot</span>
-                <span class="status-value" data-bonus-pot>€0</span>
+      <div class="app-grid">
+        <section class="device-shell">
+          <div class="device-border" data-record-target>
+            <div class="device-screen">
+              <div class="payment-row" role="list" aria-label="Payment methods">
+                <span class="payment-badge">VISA</span>
+                <span class="payment-badge">Mastercard</span>
+                <span class="payment-badge">Apple&nbsp;Pay</span>
+                <span class="payment-badge">Google&nbsp;Pay</span>
+                <span class="payment-badge">PayPal</span>
+                <span class="payment-badge">Crypto</span>
               </div>
-              <div class="status-item">
-                <span class="status-label">Min win</span>
-                <span class="status-value" data-min-win>€10</span>
+              <div class="counter-row">
+                <article class="counter-card" aria-live="polite">
+                  <span class="counter-title">Bonus</span>
+                  <span class="counter-value" data-counter-bonus>€2,400</span>
+                </article>
+                <article class="counter-card" aria-live="polite">
+                  <span class="counter-title">Free Spins</span>
+                  <span class="counter-value" data-counter-fs>212</span>
+                </article>
               </div>
-              <div class="status-item">
-                <span class="status-label">Timer</span>
-                <span class="status-value" data-timer>10:00</span>
+              <div class="jackpot-row" role="group" aria-label="Jackpots">
+                <article class="jackpot-card grand">
+                  <span class="jackpot-title">Grand</span>
+                  <span class="jackpot-value" data-jackpot="grand"></span>
+                </article>
+                <article class="jackpot-card major">
+                  <span class="jackpot-title">Major</span>
+                  <span class="jackpot-value" data-jackpot="major"></span>
+                </article>
+                <article class="jackpot-card minor">
+                  <span class="jackpot-title">Minor</span>
+                  <span class="jackpot-value" data-jackpot="minor"></span>
+                </article>
+                <article class="jackpot-card mini">
+                  <span class="jackpot-title">Mini</span>
+                  <span class="jackpot-value" data-jackpot="mini"></span>
+                </article>
               </div>
+              <div class="logo-stack">
+                <span class="logo-top">Coin</span>
+                <span class="logo-bottom">Strike</span>
+              </div>
+              <section
+                class="grid"
+                id="coin-grid"
+                role="grid"
+                aria-label="Hold and win board"
+              ></section>
+              <div class="status-strip">
+                <div class="status-item">
+                  <span class="status-label">Bonus pot</span>
+                  <span class="status-value" data-bonus-pot>€900</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">Min win</span>
+                  <span class="status-value" data-min-win>€10</span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">Timer</span>
+                  <span class="status-value" data-timer>07:57</span>
+                </div>
+              </div>
+              <div class="balance-strip">
+                <div class="balance-item">
+                  <span class="balance-label">Balance</span>
+                  <span class="balance-value" data-balance>€9,012</span>
+                </div>
+                <div class="balance-item">
+                  <span class="balance-label">Bet</span>
+                  <span class="balance-value" data-bet>€2</span>
+                </div>
+                <div class="balance-item win">
+                  <span class="balance-label">Last win</span>
+                  <span class="balance-value" data-last-win>€104</span>
+                </div>
+              </div>
+              <button id="start-button" class="start-button" type="button">
+                START
+              </button>
             </div>
-            <div class="balance-strip">
-              <div class="balance-item">
-                <span class="balance-label">Balance</span>
-                <span class="balance-value" data-balance>€0</span>
-              </div>
-              <div class="balance-item">
-                <span class="balance-label">Bet</span>
-                <span class="balance-value" data-bet>€2</span>
-              </div>
-              <div class="balance-item win">
-                <span class="balance-label">Last win</span>
-                <span class="balance-value" data-last-win>€0</span>
-              </div>
-            </div>
-            <button id="start-button" class="start-button" type="button">
-              START
-            </button>
           </div>
-        </div>
-      </section>
+          <section class="recording-panel" aria-label="Recording controls">
+            <div class="recording-controls">
+              <button type="button" id="record-start" class="record-button">
+                Start recording
+              </button>
+              <button
+                type="button"
+                id="record-stop"
+                class="record-button"
+                disabled
+              >
+                Stop
+              </button>
+              <a
+                id="record-download"
+                class="record-link"
+                download="coin-strike-recording.webm"
+                hidden
+                >Download</a
+              >
+            </div>
+            <p class="record-status" data-record-status>Ready to record slot</p>
+            <video
+              id="record-preview"
+              class="record-preview"
+              playsinline
+              controls
+              muted
+              hidden
+            ></video>
+          </section>
+        </section>
+        <aside class="admin-panel" aria-label="Admin controls">
+          <h2 class="admin-title">Admin panel</h2>
+          <form class="admin-form" id="admin-form">
+            <fieldset>
+              <legend>Core values</legend>
+              <label class="admin-field">
+                <span>Balance (€)</span>
+                <input type="number" step="1" data-admin-field="balance" />
+              </label>
+              <label class="admin-field">
+                <span>Bet (€)</span>
+                <input type="number" step="0.1" data-admin-field="bet" />
+              </label>
+              <label class="admin-field">
+                <span>Bonus pot (€)</span>
+                <input type="number" step="1" data-admin-field="bonusPot" />
+              </label>
+              <label class="admin-field">
+                <span>Min win (€)</span>
+                <input type="number" step="1" data-admin-field="minWin" />
+              </label>
+              <label class="admin-field">
+                <span>Timer (MM:SS)</span>
+                <input type="text" pattern="^\d{1,2}:\d{2}$" data-admin-field="timer" />
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Counters</legend>
+              <label class="admin-field">
+                <span>Bonus counter (€)</span>
+                <input type="number" step="1" data-admin-field="counterBonus" />
+              </label>
+              <label class="admin-field">
+                <span>Free spins</span>
+                <input type="number" step="1" data-admin-field="counterFS" />
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Jackpots (€)</legend>
+              <label class="admin-field">
+                <span>Grand</span>
+                <input type="number" step="1" data-admin-field="jackpotGrand" />
+              </label>
+              <label class="admin-field">
+                <span>Major</span>
+                <input type="number" step="1" data-admin-field="jackpotMajor" />
+              </label>
+              <label class="admin-field">
+                <span>Minor</span>
+                <input type="number" step="1" data-admin-field="jackpotMinor" />
+              </label>
+              <label class="admin-field">
+                <span>Mini</span>
+                <input type="number" step="1" data-admin-field="jackpotMini" />
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Presentation</legend>
+              <label class="admin-field">
+                <span>Last win (€)</span>
+                <input type="number" step="1" data-admin-field="lastWin" />
+              </label>
+            </fieldset>
+          </form>
+        </aside>
+      </div>
     </main>
+    <canvas id="capture-canvas" aria-hidden="true"></canvas>
     <script src="app.js"></script>
   </body>
 </html>
