@@ -10,12 +10,12 @@ const ui = {
     minor: document.querySelector('[data-jackpot="minor"]'),
     mini: document.querySelector('[data-jackpot="mini"]'),
   },
-  statusBonus: document.querySelector('[data-bonus-pot]'),
-  statusMinWin: document.querySelector('[data-min-win]'),
-  statusTimer: document.querySelector('[data-timer]'),
-  balanceValue: document.querySelector('[data-balance]'),
-  betValue: document.querySelector('[data-bet]'),
-  lastWinValue: document.querySelector('[data-last-win]'),
+  bonusPot: document.querySelector('[data-bonus-pot]'),
+  minWin: document.querySelector('[data-min-win]'),
+  timer: document.querySelector('[data-timer]'),
+  balance: document.querySelector('[data-balance]'),
+  bet: document.querySelector('[data-bet]'),
+  lastWin: document.querySelector('[data-last-win]'),
   recordStart: document.getElementById('record-start'),
   recordStop: document.getElementById('record-stop'),
   recordStatus: document.querySelector('[data-record-status]'),
@@ -26,9 +26,8 @@ const ui = {
 };
 
 const gameState = {
-  bet: 2,
   balance: 9012,
-  lastWin: 104,
+  bet: 2,
   bonusPot: 900,
   minWin: 10,
   timerSeconds: 7 * 60 + 57,
@@ -42,17 +41,18 @@ const gameState = {
     minor: 1753,
     mini: 1034,
   },
-  isMuted: false,
+  lastWin: 104,
   isSpinning: false,
-  timerIntervalId: null,
+  awaitingRespin: false,
+  isMuted: false,
+  timerInterval: null,
   audio: {},
   audioGraph: {
+    initialized: false,
     context: null,
     masterGain: null,
     destination: null,
-    initialized: false,
   },
-  awaitingRespin: false,
 };
 
 const symbolPool = [
@@ -87,39 +87,44 @@ const recordingState = {
   isRecording: false,
   chunks: [],
   recorder: null,
-  frameRequest: null,
   stream: null,
   canvasStream: null,
+  context: null,
+  frameRequest: null,
   previousUrl: null,
   scale: 1,
 };
 
-let adminUpdating = false;
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'EUR',
   maximumFractionDigits: 0,
 });
 
-function initGame() {
+let adminUpdating = false;
+
+function init() {
   buildGrid();
   seedGrid();
-  setupAudio();
   bindEvents();
+  setupAudio();
   updateUI();
-  initTimer();
+  startTimer();
   setupRecording();
 }
 
+document.addEventListener('DOMContentLoaded', init);
+
 function buildGrid() {
+  if (!ui.grid) return;
   ui.grid.innerHTML = '';
   ui.gridCells = [];
   for (let i = 0; i < 9; i += 1) {
     const cell = document.createElement('div');
     cell.className = 'coin-cell multiplier';
-    const label = document.createElement('span');
-    label.textContent = 'x1';
-    cell.appendChild(label);
+    const span = document.createElement('span');
+    span.textContent = 'x1';
+    cell.appendChild(span);
     cell.setAttribute('role', 'gridcell');
     cell.setAttribute('aria-live', 'polite');
     ui.grid.appendChild(cell);
@@ -143,50 +148,79 @@ function seedGrid() {
 }
 
 function bindEvents() {
-  ui.startButton.addEventListener('click', () => startSpin('manual'));
-  ui.muteToggle.addEventListener('click', toggleMute);
+  if (ui.startButton) {
+    ui.startButton.addEventListener('click', () => startSpin('manual'));
+  }
+  if (ui.muteToggle) {
+    ui.muteToggle.addEventListener('click', toggleMute);
+  }
   if (ui.adminForm) {
     ui.adminForm.addEventListener('input', handleAdminInput, true);
   }
 }
 
-function initTimer() {
-  if (gameState.timerIntervalId) {
-    clearInterval(gameState.timerIntervalId);
+function startTimer() {
+  if (gameState.timerInterval) {
+    clearInterval(gameState.timerInterval);
   }
-  gameState.timerIntervalId = setInterval(() => {
+  gameState.timerInterval = setInterval(() => {
     if (gameState.timerSeconds > 0) {
       gameState.timerSeconds -= 1;
-      ui.statusTimer.textContent = formatTimer(gameState.timerSeconds);
+      if (ui.timer) {
+        ui.timer.textContent = formatTimer(gameState.timerSeconds);
+      }
     }
   }, 1000);
 }
 
 function updateUI() {
-  ui.counterBonus.textContent = formatCurrency(gameState.counters.bonus);
-  ui.counterFS.textContent = gameState.counters.freeSpins.toLocaleString('en-US');
-  ui.statusBonus.textContent = formatCurrency(gameState.bonusPot);
-  ui.statusMinWin.textContent = formatCurrency(gameState.minWin);
-  ui.statusTimer.textContent = formatTimer(gameState.timerSeconds);
-  ui.balanceValue.textContent = formatCurrency(gameState.balance);
-  ui.betValue.textContent = formatCurrency(gameState.bet);
-  ui.lastWinValue.textContent = formatCurrency(gameState.lastWin);
+  if (ui.counterBonus) {
+    ui.counterBonus.textContent = formatCurrency(gameState.counters.bonus);
+  }
+  if (ui.counterFS) {
+    ui.counterFS.textContent = gameState.counters.freeSpins.toLocaleString('en-US');
+  }
+  if (ui.bonusPot) {
+    ui.bonusPot.textContent = formatCurrency(gameState.bonusPot);
+  }
+  if (ui.minWin) {
+    ui.minWin.textContent = formatCurrency(gameState.minWin);
+  }
+  if (ui.timer) {
+    ui.timer.textContent = formatTimer(gameState.timerSeconds);
+  }
+  if (ui.balance) {
+    ui.balance.textContent = formatCurrency(gameState.balance);
+  }
+  if (ui.bet) {
+    ui.bet.textContent = formatCurrency(gameState.bet);
+  }
+  if (ui.lastWin) {
+    ui.lastWin.textContent = formatCurrency(gameState.lastWin);
+  }
   Object.entries(gameState.jackpots).forEach(([key, value]) => {
     const target = ui.jackpotValues[key];
     if (target) {
       target.textContent = formatCurrency(value);
     }
   });
-
-  const shouldDisable =
-    gameState.isSpinning ||
-    gameState.awaitingRespin ||
-    (gameState.balance < gameState.bet && gameState.counters.freeSpins <= 0);
-  ui.startButton.disabled = shouldDisable;
-
+  updateStartButtonState();
   adminUpdating = true;
   updateAdminForm();
   adminUpdating = false;
+}
+
+function updateStartButtonState() {
+  if (!ui.startButton) return;
+  const disable =
+    gameState.isSpinning ||
+    gameState.awaitingRespin ||
+    (!canAffordSpin() && gameState.counters.freeSpins <= 0);
+  ui.startButton.disabled = disable;
+}
+
+function canAffordSpin() {
+  return gameState.balance >= gameState.bet;
 }
 
 function updateAdminForm() {
@@ -196,40 +230,40 @@ function updateAdminForm() {
     if (!field) return;
     switch (field) {
       case 'balance':
-        input.value = Number(gameState.balance.toFixed(0));
+        input.value = Math.round(gameState.balance);
         break;
       case 'bet':
-        input.value = Number(gameState.bet.toFixed(2));
+        input.value = gameState.bet.toFixed(2);
         break;
       case 'bonusPot':
-        input.value = Number(gameState.bonusPot.toFixed(0));
+        input.value = Math.round(gameState.bonusPot);
         break;
       case 'minWin':
-        input.value = Number(gameState.minWin.toFixed(0));
+        input.value = Math.round(gameState.minWin);
         break;
       case 'timer':
         input.value = formatTimer(gameState.timerSeconds);
         break;
       case 'counterBonus':
-        input.value = Number(gameState.counters.bonus.toFixed(0));
+        input.value = Math.round(gameState.counters.bonus);
         break;
       case 'counterFS':
-        input.value = Number(gameState.counters.freeSpins.toFixed(0));
+        input.value = Math.round(gameState.counters.freeSpins);
         break;
       case 'jackpotGrand':
-        input.value = Number(gameState.jackpots.grand.toFixed(0));
+        input.value = Math.round(gameState.jackpots.grand);
         break;
       case 'jackpotMajor':
-        input.value = Number(gameState.jackpots.major.toFixed(0));
+        input.value = Math.round(gameState.jackpots.major);
         break;
       case 'jackpotMinor':
-        input.value = Number(gameState.jackpots.minor.toFixed(0));
+        input.value = Math.round(gameState.jackpots.minor);
         break;
       case 'jackpotMini':
-        input.value = Number(gameState.jackpots.mini.toFixed(0));
+        input.value = Math.round(gameState.jackpots.mini);
         break;
       case 'lastWin':
-        input.value = Number(gameState.lastWin.toFixed(0));
+        input.value = Math.round(gameState.lastWin);
         break;
       default:
         break;
@@ -239,52 +273,49 @@ function updateAdminForm() {
 
 function handleAdminInput(event) {
   if (adminUpdating) return;
-  const target = event.target;
-  if (!(target instanceof HTMLInputElement)) return;
-  const field = target.dataset.adminField;
+  const field = event.target.dataset.adminField;
   if (!field) return;
-  const value = target.value.trim();
-
+  const raw = event.target.value.trim();
   switch (field) {
     case 'balance':
-      gameState.balance = clampNumber(parseFloat(value), gameState.balance);
+      gameState.balance = clampNumber(parseFloat(raw), gameState.balance);
       break;
     case 'bet':
-      gameState.bet = Math.max(0.1, clampNumber(parseFloat(value), gameState.bet));
+      gameState.bet = Math.max(0.1, clampNumber(parseFloat(raw), gameState.bet));
       break;
     case 'bonusPot':
-      gameState.bonusPot = Math.max(0, clampNumber(parseFloat(value), gameState.bonusPot));
+      gameState.bonusPot = Math.max(0, clampNumber(parseFloat(raw), gameState.bonusPot));
       break;
     case 'minWin':
-      gameState.minWin = Math.max(0, clampNumber(parseFloat(value), gameState.minWin));
+      gameState.minWin = Math.max(0, clampNumber(parseFloat(raw), gameState.minWin));
       break;
     case 'timer': {
-      const seconds = parseTimer(value);
+      const seconds = parseTimer(raw);
       if (seconds !== null) {
         gameState.timerSeconds = seconds;
       }
       break;
     }
     case 'counterBonus':
-      gameState.counters.bonus = Math.max(0, clampNumber(parseFloat(value), gameState.counters.bonus));
+      gameState.counters.bonus = Math.max(0, clampNumber(parseFloat(raw), gameState.counters.bonus));
       break;
     case 'counterFS':
-      gameState.counters.freeSpins = Math.max(0, clampNumber(parseFloat(value), gameState.counters.freeSpins));
+      gameState.counters.freeSpins = Math.max(0, clampNumber(parseFloat(raw), gameState.counters.freeSpins));
       break;
     case 'jackpotGrand':
-      gameState.jackpots.grand = Math.max(0, clampNumber(parseFloat(value), gameState.jackpots.grand));
+      gameState.jackpots.grand = Math.max(0, clampNumber(parseFloat(raw), gameState.jackpots.grand));
       break;
     case 'jackpotMajor':
-      gameState.jackpots.major = Math.max(0, clampNumber(parseFloat(value), gameState.jackpots.major));
+      gameState.jackpots.major = Math.max(0, clampNumber(parseFloat(raw), gameState.jackpots.major));
       break;
     case 'jackpotMinor':
-      gameState.jackpots.minor = Math.max(0, clampNumber(parseFloat(value), gameState.jackpots.minor));
+      gameState.jackpots.minor = Math.max(0, clampNumber(parseFloat(raw), gameState.jackpots.minor));
       break;
     case 'jackpotMini':
-      gameState.jackpots.mini = Math.max(0, clampNumber(parseFloat(value), gameState.jackpots.mini));
+      gameState.jackpots.mini = Math.max(0, clampNumber(parseFloat(raw), gameState.jackpots.mini));
       break;
     case 'lastWin':
-      gameState.lastWin = Math.max(0, clampNumber(parseFloat(value), gameState.lastWin));
+      gameState.lastWin = Math.max(0, clampNumber(parseFloat(raw), gameState.lastWin));
       break;
     default:
       break;
@@ -297,92 +328,94 @@ function clampNumber(value, fallback) {
 }
 
 function startSpin(trigger = 'manual') {
-  if (gameState.isSpinning) return;
-  gameState.awaitingRespin = false;
-
-  let usedFreeSpin = false;
+  if (gameState.isSpinning || gameState.awaitingRespin) return;
   if (trigger === 'manual') {
     if (gameState.counters.freeSpins > 0) {
       gameState.counters.freeSpins -= 1;
-      usedFreeSpin = true;
-    } else if (gameState.balance >= gameState.bet) {
+    } else if (canAffordSpin()) {
       gameState.balance -= gameState.bet;
     } else {
-      updateUI();
+      updateStartButtonState();
       return;
     }
     gameState.bonusPot += Math.max(1, Math.round(gameState.bet * 2));
   }
-
   gameState.isSpinning = true;
-  ui.startButton.disabled = true;
+  updateStartButtonState();
   playSound('click');
   setTimeout(() => playSound('spin'), 120);
-
   const result = generateSpinResult();
+  if (!ui.gridCells) return;
   ui.gridCells.forEach((cell) => {
     cell.classList.add('spinning');
     cell.firstChild.textContent = '';
   });
-
   runSpinAnimation(result).then(() => {
-    const outcome = applySpinResult(result, { trigger, usedFreeSpin });
+    const outcome = applySpinResult(result);
     gameState.isSpinning = false;
     updateUI();
     if (!outcome.triggeredRespin) {
-      ui.startButton.disabled =
-        gameState.balance < gameState.bet && gameState.counters.freeSpins <= 0;
+      updateStartButtonState();
     }
   });
 }
 
 function runSpinAnimation(result) {
   return new Promise((resolve) => {
+    if (!ui.gridCells) {
+      resolve();
+      return;
+    }
     const columns = [0, 1, 2];
-    columns.forEach((columnIndex, revealIndex) => {
-      const revealDelay = 200 + revealIndex * 220;
+    columns.forEach((column, index) => {
+      const delay = 200 + index * 220;
       setTimeout(() => {
         for (let row = 0; row < 3; row += 1) {
-          const cellIndex = row * 3 + columnIndex;
+          const cellIndex = row * 3 + column;
           const cell = ui.gridCells[cellIndex];
-          cell.classList.remove('spinning');
           presentSymbol(cell, result[cellIndex]);
+          cell.classList.remove('spinning');
           cell.classList.add('revealed');
+          setTimeout(() => cell.classList.remove('revealed'), 500);
         }
-        if (revealIndex === columns.length - 1) {
+        if (index === columns.length - 1) {
           setTimeout(resolve, 150);
         }
-      }, revealDelay);
+      }, delay);
     });
   });
 }
 
 function presentSymbol(cell, symbol) {
+  if (!cell || !symbol) return;
   cell.className = 'coin-cell';
-  if (symbol.type === 'multiplier') {
-    cell.classList.add('multiplier');
-    if (symbol.tier && symbol.tier !== 'low') {
-      cell.classList.add(symbol.tier);
-    }
-  } else if (symbol.type === 'bonus' || symbol.type === 'free-spins') {
-    cell.classList.add('special');
-  } else if (symbol.type === 'win') {
-    cell.classList.add('win');
-  } else if (symbol.type === 'respin') {
-    cell.classList.add('re-spin');
-  } else {
-    cell.classList.add('multiplier');
+  switch (symbol.type) {
+    case 'multiplier':
+      cell.classList.add('multiplier');
+      if (symbol.tier && symbol.tier !== 'low') {
+        cell.classList.add(symbol.tier);
+      }
+      break;
+    case 'bonus':
+    case 'free-spins':
+      cell.classList.add('special');
+      break;
+    case 'win':
+      cell.classList.add('win');
+      break;
+    case 'respin':
+      cell.classList.add('re-spin');
+      break;
+    default:
+      cell.classList.add('multiplier');
   }
-  const formattedLabel = symbol.label.replace(/\n/g, '<br>');
-  cell.firstChild.innerHTML = formattedLabel;
+  cell.firstChild.innerHTML = symbol.label.replace(/\n/g, '<br>');
 }
 
 function updateGridDisplay(result) {
+  if (!ui.gridCells) return;
   result.forEach((symbol, index) => {
-    const cell = ui.gridCells[index];
-    if (cell) {
-      presentSymbol(cell, symbol);
-    }
+    presentSymbol(ui.gridCells[index], symbol);
   });
 }
 
@@ -392,7 +425,7 @@ function generateSpinResult() {
     result.push(pickSymbol());
   }
   if (!result.some((symbol) => symbol.type === 'multiplier' && symbol.multiplier > 1)) {
-    result[0] = { type: 'multiplier', label: 'x10', multiplier: 10, tier: 'medium', weight: 0 };
+    result[0] = { type: 'multiplier', label: 'x10', multiplier: 10, tier: 'medium' };
   }
   return result;
 }
@@ -410,26 +443,25 @@ function pickSymbol() {
   return { ...symbolPool[symbolPool.length - 1] };
 }
 
-function applySpinResult(result, context) {
-  let totalMultiplier = 0;
+function applySpinResult(result) {
+  let multiplierSum = 0;
   let directWin = 0;
-  let bonusIncrement = 0;
-  let freeSpinIncrement = 0;
+  let bonusAdd = 0;
+  let fsAdd = 0;
   let triggeredRespin = false;
-
   result.forEach((symbol) => {
     switch (symbol.type) {
       case 'multiplier':
-        totalMultiplier += symbol.multiplier;
+        multiplierSum += symbol.multiplier;
         break;
       case 'win':
         directWin += symbol.amount;
         break;
       case 'bonus':
-        bonusIncrement += symbol.amount;
+        bonusAdd += symbol.amount;
         break;
       case 'free-spins':
-        freeSpinIncrement += symbol.amount;
+        fsAdd += symbol.amount;
         break;
       case 'respin':
         triggeredRespin = true;
@@ -438,101 +470,59 @@ function applySpinResult(result, context) {
         break;
     }
   });
-
-  if (freeSpinIncrement > 0) {
-    gameState.counters.freeSpins += freeSpinIncrement;
+  if (bonusAdd > 0) {
+    gameState.counters.bonus += bonusAdd;
+    gameState.bonusPot += bonusAdd;
   }
-
-  if (bonusIncrement > 0) {
-    gameState.counters.bonus += bonusIncrement;
-    gameState.bonusPot += bonusIncrement;
+  if (fsAdd > 0) {
+    gameState.counters.freeSpins += fsAdd;
   }
-
-  let winFromMultipliers = totalMultiplier * gameState.bet;
-  let totalWin = winFromMultipliers + directWin;
-
+  let totalWin = multiplierSum * gameState.bet + directWin;
   if (totalWin > 0 && totalWin < gameState.minWin) {
     totalWin = gameState.minWin;
   }
-
   if (totalWin > 0) {
     gameState.balance += totalWin;
     gameState.lastWin = totalWin;
     playSound('win');
+    highlightWin();
   } else {
     gameState.lastWin = 0;
   }
-
   if (triggeredRespin) {
     gameState.awaitingRespin = true;
+    updateStartButtonState();
     setTimeout(() => {
       gameState.awaitingRespin = false;
+      updateStartButtonState();
       startSpin('respin');
     }, 700);
   }
-
   return { totalWin, triggeredRespin };
 }
 
+function highlightWin() {
+  if (!ui.lastWin) return;
+  ui.lastWin.classList.remove('highlight');
+  void ui.lastWin.offsetWidth;
+  ui.lastWin.classList.add('highlight');
+}
+
 function setupAudio() {
-  Object.entries(audioSources).forEach(([key, src]) => {
+  Object.entries(audioSources).forEach(([name, src]) => {
     try {
       const audio = new Audio(src);
       audio.preload = 'auto';
       audio.muted = gameState.isMuted;
-      audio.setAttribute('data-audio-role', key);
-      gameState.audio[key] = { element: audio, connected: false };
+      gameState.audio[name] = { element: audio, connected: false };
     } catch (error) {
-      console.warn('Audio unavailable', key, error);
+      console.warn('Audio unavailable', name, error);
     }
   });
 }
 
-function playSound(name) {
-  if (gameState.isMuted) return;
-  const entry = gameState.audio[name];
-  if (!entry || !entry.element) return;
-  ensureAudioGraph();
-  const { context } = gameState.audioGraph;
-  if (context && context.state === 'suspended') {
-    context.resume().catch(() => {});
-  }
-  if (entry.element.muted && !gameState.audioGraph.masterGain) {
-    entry.element.muted = false;
-  }
-  try {
-    entry.element.currentTime = 0;
-    const playPromise = entry.element.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
-  } catch (error) {
-    console.warn('Audio play failed', name, error);
-  }
-}
-
-function toggleMute() {
-  gameState.isMuted = !gameState.isMuted;
-  ui.muteToggle.setAttribute('aria-pressed', String(gameState.isMuted));
-  const icon = ui.muteToggle.querySelector('.mute-icon');
-  if (icon) {
-    icon.textContent = gameState.isMuted ? '🔇' : '🔊';
-  }
-  if (gameState.audioGraph.masterGain) {
-    gameState.audioGraph.masterGain.gain.value = gameState.isMuted ? 0 : 1;
-  } else {
-    Object.values(gameState.audio).forEach((entry) => {
-      if (entry && entry.element) {
-        entry.element.muted = gameState.isMuted;
-      }
-    });
-  }
-}
-
 function ensureAudioGraph() {
-  if (gameState.audioGraph.initialized) {
-    return;
-  }
+  if (gameState.audioGraph.initialized) return;
   const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextCtor) {
     gameState.audioGraph.initialized = true;
@@ -547,25 +537,61 @@ function ensureAudioGraph() {
     masterGain.connect(destination);
     Object.values(gameState.audio).forEach((entry) => {
       if (!entry || !entry.element || entry.connected) return;
-      try {
-        const source = context.createMediaElementSource(entry.element);
-        source.connect(masterGain);
-        entry.source = source;
-        entry.element.muted = true;
-        entry.connected = true;
-      } catch (error) {
-        console.warn('Audio graph link failed', error);
-      }
+      const source = context.createMediaElementSource(entry.element);
+      source.connect(masterGain);
+      entry.source = source;
+      entry.connected = true;
+      entry.element.muted = true;
     });
     gameState.audioGraph = {
+      initialized: true,
       context,
       masterGain,
       destination,
-      initialized: true,
     };
   } catch (error) {
     console.warn('Audio graph unavailable', error);
     gameState.audioGraph.initialized = true;
+  }
+}
+
+function playSound(name) {
+  if (gameState.isMuted) return;
+  const entry = gameState.audio[name];
+  if (!entry || !entry.element) return;
+  ensureAudioGraph();
+  const { context } = gameState.audioGraph;
+  if (context && context.state === 'suspended') {
+    context.resume().catch(() => {});
+  }
+  try {
+    entry.element.currentTime = 0;
+    const playPromise = entry.element.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  } catch (error) {
+    console.warn('Audio play failed', name, error);
+  }
+}
+
+function toggleMute() {
+  gameState.isMuted = !gameState.isMuted;
+  if (ui.muteToggle) {
+    ui.muteToggle.setAttribute('aria-pressed', String(gameState.isMuted));
+    const icon = ui.muteToggle.querySelector('.mute-toggle__icon');
+    if (icon) {
+      icon.textContent = gameState.isMuted ? '🔇' : '🔊';
+    }
+  }
+  if (gameState.audioGraph.masterGain) {
+    gameState.audioGraph.masterGain.gain.value = gameState.isMuted ? 0 : 1;
+  } else {
+    Object.values(gameState.audio).forEach((entry) => {
+      if (entry && entry.element) {
+        entry.element.muted = gameState.isMuted;
+      }
+    });
   }
 }
 
@@ -574,16 +600,14 @@ function parseTimer(value) {
   if (!match) return null;
   const minutes = Number.parseInt(match[1], 10);
   const seconds = Number.parseInt(match[2], 10);
-  if (Number.isNaN(minutes) || Number.isNaN(seconds)) {
-    return null;
-  }
+  if (Number.isNaN(minutes) || Number.isNaN(seconds)) return null;
   return minutes * 60 + Math.min(seconds, 59);
 }
 
 function formatTimer(totalSeconds) {
-  const clamped = Math.max(0, Math.floor(totalSeconds));
-  const minutes = String(Math.floor(clamped / 60)).padStart(2, '0');
-  const seconds = String(clamped % 60).padStart(2, '0');
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const minutes = String(Math.floor(safe / 60)).padStart(2, '0');
+  const seconds = String(safe % 60).padStart(2, '0');
   return `${minutes}:${seconds}`;
 }
 
@@ -592,21 +616,20 @@ function formatCurrency(value) {
 }
 
 function setupRecording() {
+  if (!ui.recordStart || !ui.recordStop) return;
   if (!recordingState.supported) {
-    updateRecordStatus('Recording not supported in this browser');
     ui.recordStart.disabled = true;
     ui.recordStop.disabled = true;
+    updateRecordStatus('Recording not supported in this browser');
     return;
   }
-
   ui.recordStart.addEventListener('click', () => {
     startRecording().catch((error) => {
       console.error('Recording failed to start', error);
-      updateRecordStatus('Recording error');
       stopRecording(true);
+      updateRecordStatus('Recording error');
     });
   });
-
   ui.recordStop.addEventListener('click', () => stopRecording());
 }
 
@@ -615,22 +638,15 @@ async function startRecording() {
   if (typeof window.html2canvas !== 'function') {
     throw new Error('Capture engine missing');
   }
-
+  const target = document.querySelector('[data-record-target]');
+  if (!target) {
+    throw new Error('Slot frame not found');
+  }
   ensureAudioGraph();
   const { context, destination } = gameState.audioGraph;
   if (context && context.state === 'suspended') {
-    try {
-      await context.resume();
-    } catch (error) {
-      console.warn('Audio context resume failed', error);
-    }
+    await context.resume().catch(() => {});
   }
-
-  const target = document.querySelector('[data-record-target]');
-  if (!target) {
-    throw new Error('Record target not found');
-  }
-
   const rect = target.getBoundingClientRect();
   const scale = Math.max(2, window.devicePixelRatio || 1);
   recordingState.scale = scale;
@@ -639,22 +655,18 @@ async function startRecording() {
   canvas.height = rect.height * scale;
   canvas.style.width = `${rect.width}px`;
   canvas.style.height = `${rect.height}px`;
-  const context = canvas.getContext('2d');
-  recordingState.context = context;
-  if (context) {
-    context.imageSmoothingEnabled = true;
-  }
-
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas context missing');
+  ctx.imageSmoothingEnabled = true;
+  recordingState.context = ctx;
   if (ui.recordPreview) {
     try {
       ui.recordPreview.pause();
       ui.recordPreview.currentTime = 0;
     } catch (error) {
-      // ignore preview reset errors
+      // ignore
     }
   }
-
-  const mimeType = getSupportedMimeType();
   const canvasStream = canvas.captureStream(30);
   recordingState.canvasStream = canvasStream;
   let stream = canvasStream;
@@ -664,17 +676,16 @@ async function startRecording() {
       stream = new MediaStream([...canvasStream.getVideoTracks(), ...audioTracks]);
     }
   }
-  recordingState.stream = stream;
+  const mimeType = getSupportedMimeType();
   const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
   recordingState.recorder = recorder;
+  recordingState.stream = stream;
   recordingState.chunks = [];
-
   recorder.ondataavailable = (event) => {
     if (event.data && event.data.size > 0) {
       recordingState.chunks.push(event.data);
     }
   };
-
   recorder.onstop = () => {
     recordingState.recorder = null;
     if (!recordingState.chunks.length) {
@@ -687,27 +698,26 @@ async function startRecording() {
     }
     const url = URL.createObjectURL(blob);
     recordingState.previousUrl = url;
-    ui.recordDownload.href = url;
-    ui.recordDownload.hidden = false;
-    ui.recordPreview.src = url;
-    ui.recordPreview.hidden = false;
+    if (ui.recordDownload) {
+      ui.recordDownload.href = url;
+      ui.recordDownload.hidden = false;
+    }
+    if (ui.recordPreview) {
+      ui.recordPreview.src = url;
+      ui.recordPreview.hidden = false;
+    }
     updateRecordStatus('Recording ready — download or preview');
   };
-
-  try {
-    recorder.start(250);
-  } catch (error) {
-    recordingState.recorder = null;
-    stream.getTracks().forEach((track) => track.stop());
-    updateRecordStatus('Recorder unavailable');
-    throw error;
-  }
-
+  recorder.start(250);
   recordingState.isRecording = true;
   ui.recordStart.disabled = true;
   ui.recordStop.disabled = false;
-  ui.recordDownload.hidden = true;
-  ui.recordPreview.hidden = true;
+  if (ui.recordDownload) {
+    ui.recordDownload.hidden = true;
+  }
+  if (ui.recordPreview) {
+    ui.recordPreview.hidden = true;
+  }
   updateRecordStatus('Recording slot with audio…');
   drawRecordingFrame(target);
 }
@@ -719,6 +729,7 @@ async function drawRecordingFrame(target) {
       backgroundColor: null,
       scale: recordingState.scale,
     });
+    if (!recordingState.isRecording || !recordingState.context) return;
     recordingState.context.clearRect(0, 0, ui.captureCanvas.width, ui.captureCanvas.height);
     recordingState.context.drawImage(snapshot, 0, 0, ui.captureCanvas.width, ui.captureCanvas.height);
   } catch (error) {
@@ -730,9 +741,7 @@ async function drawRecordingFrame(target) {
 }
 
 function stopRecording(cancelled = false) {
-  if (!recordingState.isRecording) {
-    return;
-  }
+  if (!recordingState.isRecording) return;
   recordingState.isRecording = false;
   if (recordingState.frameRequest) {
     cancelAnimationFrame(recordingState.frameRequest);
@@ -747,13 +756,13 @@ function stopRecording(cancelled = false) {
   }
   recordingState.stream = null;
   recordingState.context = null;
-  ui.recordStart.disabled = false;
-  ui.recordStop.disabled = true;
-  if (cancelled) {
-    updateRecordStatus('Recording cancelled');
-  } else {
-    updateRecordStatus('Finalising recording…');
+  if (ui.recordStart) {
+    ui.recordStart.disabled = false;
   }
+  if (ui.recordStop) {
+    ui.recordStop.disabled = true;
+  }
+  updateRecordStatus(cancelled ? 'Recording cancelled' : 'Finalising recording…');
 }
 
 function getSupportedMimeType() {
@@ -767,10 +776,10 @@ function getSupportedMimeType() {
 }
 
 function updateRecordStatus(text) {
-  ui.recordStatus.textContent = text;
+  if (ui.recordStatus) {
+    ui.recordStatus.textContent = text;
+  }
 }
-
-window.addEventListener('DOMContentLoaded', initGame);
 
 /* html2canvas v1.4.1 (bundled for capture) */
 /*!

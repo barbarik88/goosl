@@ -3,143 +3,114 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Coin Strike — Hold &amp; Win Demo</title>
+    <title>Coin Strike Studio</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="background-orbs" aria-hidden="true"></div>
-    <main class="workspace">
-      <header class="app-header">
-        <h1 class="brand">Coin Strike Studio</h1>
+    <div class="background-lights" aria-hidden="true"></div>
+    <main class="studio">
+      <header class="studio__header">
+        <h1 class="studio__brand">Coin Strike Studio</h1>
         <button
           class="mute-toggle"
           type="button"
           aria-label="Toggle sound"
           aria-pressed="false"
         >
-          <span class="mute-icon" data-sound="on">🔊</span>
+          <span class="mute-toggle__icon" aria-hidden="true">🔊</span>
         </button>
       </header>
-      <div class="app-grid">
-        <section class="device-shell">
-          <div class="device-border" data-record-target>
-            <div class="device-screen">
-              <div class="payment-row" role="list" aria-label="Payment methods">
-                <span class="payment-badge">VISA</span>
-                <span class="payment-badge">Mastercard</span>
-                <span class="payment-badge">Apple&nbsp;Pay</span>
-                <span class="payment-badge">Google&nbsp;Pay</span>
-                <span class="payment-badge">PayPal</span>
-                <span class="payment-badge">Crypto</span>
+      <div class="studio__layout">
+        <section class="device-stack">
+          <div class="phone-frame" data-record-target>
+            <div class="phone-screen">
+              <div class="payment-row" aria-label="Payment methods" role="list">
+                <span class="payment-badge" role="listitem">VISA</span>
+                <span class="payment-badge" role="listitem">MASTERCARD</span>
+                <span class="payment-badge" role="listitem">APPLE PAY</span>
+                <span class="payment-badge" role="listitem">GOOGLE PAY</span>
+                <span class="payment-badge" role="listitem">BANK</span>
+                <span class="payment-badge" role="listitem">CRYPTO</span>
               </div>
               <div class="counter-row">
-                <article class="counter-card" aria-live="polite">
-                  <span class="counter-title">Bonus</span>
-                  <span class="counter-value" data-counter-bonus>€2,400</span>
+                <article class="counter-card">
+                  <span class="counter-card__label">Bonus</span>
+                  <span class="counter-card__value" data-counter-bonus>€2,400</span>
                 </article>
-                <article class="counter-card" aria-live="polite">
-                  <span class="counter-title">Free Spins</span>
-                  <span class="counter-value" data-counter-fs>212</span>
+                <article class="counter-card">
+                  <span class="counter-card__label">Free Spins</span>
+                  <span class="counter-card__value" data-counter-fs>212</span>
                 </article>
               </div>
               <div class="jackpot-row" role="group" aria-label="Jackpots">
-                <article class="jackpot-card grand">
-                  <span class="jackpot-title">Grand</span>
-                  <span class="jackpot-value" data-jackpot="grand"></span>
+                <article class="jackpot grand">
+                  <span class="jackpot__label">Grand</span>
+                  <span class="jackpot__value" data-jackpot="grand">€0</span>
                 </article>
-                <article class="jackpot-card major">
-                  <span class="jackpot-title">Major</span>
-                  <span class="jackpot-value" data-jackpot="major"></span>
+                <article class="jackpot major">
+                  <span class="jackpot__label">Major</span>
+                  <span class="jackpot__value" data-jackpot="major">€0</span>
                 </article>
-                <article class="jackpot-card minor">
-                  <span class="jackpot-title">Minor</span>
-                  <span class="jackpot-value" data-jackpot="minor"></span>
+                <article class="jackpot minor">
+                  <span class="jackpot__label">Minor</span>
+                  <span class="jackpot__value" data-jackpot="minor">€0</span>
                 </article>
-                <article class="jackpot-card mini">
-                  <span class="jackpot-title">Mini</span>
-                  <span class="jackpot-value" data-jackpot="mini"></span>
+                <article class="jackpot mini">
+                  <span class="jackpot__label">Mini</span>
+                  <span class="jackpot__value" data-jackpot="mini">€0</span>
                 </article>
               </div>
-              <div class="logo-stack">
-                <span class="logo-top">Coin</span>
-                <span class="logo-bottom">Strike</span>
+              <div class="logo-stack" aria-hidden="true">
+                <span class="logo-stack__top">Coin</span>
+                <span class="logo-stack__bottom">Strike</span>
               </div>
-              <section
-                class="grid"
-                id="coin-grid"
-                role="grid"
-                aria-label="Hold and win board"
-              ></section>
+              <section class="coin-grid" id="coin-grid" role="grid" aria-label="Coin Strike board"></section>
               <div class="status-strip">
-                <div class="status-item">
-                  <span class="status-label">Bonus pot</span>
-                  <span class="status-value" data-bonus-pot>€900</span>
+                <div class="status-tile">
+                  <span class="status-tile__label">Bonus pot</span>
+                  <span class="status-tile__value" data-bonus-pot>€900</span>
                 </div>
-                <div class="status-item">
-                  <span class="status-label">Min win</span>
-                  <span class="status-value" data-min-win>€10</span>
+                <div class="status-tile">
+                  <span class="status-tile__label">Min win</span>
+                  <span class="status-tile__value" data-min-win>€10</span>
                 </div>
-                <div class="status-item">
-                  <span class="status-label">Timer</span>
-                  <span class="status-value" data-timer>07:57</span>
+                <div class="status-tile">
+                  <span class="status-tile__label">Timer</span>
+                  <span class="status-tile__value" data-timer>07:57</span>
                 </div>
               </div>
               <div class="balance-strip">
-                <div class="balance-item">
-                  <span class="balance-label">Balance</span>
-                  <span class="balance-value" data-balance>€9,012</span>
+                <div class="balance-cell">
+                  <span class="balance-cell__label">Balance</span>
+                  <span class="balance-cell__value" data-balance>€9,012</span>
                 </div>
-                <div class="balance-item">
-                  <span class="balance-label">Bet</span>
-                  <span class="balance-value" data-bet>€2</span>
+                <div class="balance-cell">
+                  <span class="balance-cell__label">Bet</span>
+                  <span class="balance-cell__value" data-bet>€2</span>
                 </div>
-                <div class="balance-item win">
-                  <span class="balance-label">Last win</span>
-                  <span class="balance-value" data-last-win>€104</span>
+                <div class="balance-cell win">
+                  <span class="balance-cell__label">Last win</span>
+                  <span class="balance-cell__value" data-last-win>€104</span>
                 </div>
               </div>
-              <button id="start-button" class="start-button" type="button">
-                START
-              </button>
+              <button id="start-button" class="start-button" type="button">Start</button>
             </div>
           </div>
-          <section class="recording-panel" aria-label="Recording controls">
-            <div class="recording-controls">
-              <button type="button" id="record-start" class="record-button">
-                Start recording
-              </button>
-              <button
-                type="button"
-                id="record-stop"
-                class="record-button"
-                disabled
-              >
-                Stop
-              </button>
-              <a
-                id="record-download"
-                class="record-link"
-                download="coin-strike-recording.webm"
-                hidden
-                >Download</a
-              >
+          <section class="record-card" aria-label="Recording controls">
+            <div class="record-actions">
+              <button type="button" id="record-start" class="record-button">Start recording</button>
+              <button type="button" id="record-stop" class="record-button" disabled>Stop</button>
+              <a id="record-download" class="record-link" download="coin-strike-recording.webm" hidden>Download</a>
             </div>
-            <p class="record-status" data-record-status>Ready to record slot</p>
-            <video
-              id="record-preview"
-              class="record-preview"
-              playsinline
-              controls
-              muted
-              hidden
-            ></video>
+            <p class="record-status" data-record-status>Ready to capture slot</p>
+            <video id="record-preview" class="record-preview" playsinline controls muted hidden></video>
           </section>
         </section>
-        <aside class="admin-panel" aria-label="Admin controls">
-          <h2 class="admin-title">Admin panel</h2>
+        <aside class="admin" aria-label="Admin panel">
+          <h2 class="admin__title">Admin panel</h2>
           <form class="admin-form" id="admin-form">
             <fieldset>
-              <legend>Core values</legend>
+              <legend>Core</legend>
               <label class="admin-field">
                 <span>Balance (€)</span>
                 <input type="number" step="1" data-admin-field="balance" />
