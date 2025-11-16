@@ -34,6 +34,7 @@
   --admin-border: rgba(255, 255, 255, 0.12);
   --record-gradient: linear-gradient(135deg, #4df8ff, #7a35e7);
   --record-stop-gradient: linear-gradient(135deg, #ff7a88, #ff3d5b);
+  --cursor-finger: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2NCcgaGVpZ2h0PSc2NCcgdmlld0JveD0nMCAwIDY0IDY0Jz4KICA8cGF0aCBmaWxsPScjZmNkMjlmJyBzdHJva2U9JyNjNTg2MzgnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJwogICAgICAgIGQ9J00yOCAxMmMwLTMuMyAyLjctNiA2LTZzNiAyLjcgNiA2djE3LjVjMS0xLjIgMi43LTIgNC41LTIgMy45IDAgNyAzLjEgNyA3djZjMCA3LjQtNS4zIDEzLjctMTIuNiAxNC43TDI5IDU3Yy02LjcgMS0xMi44LTMuMy0xNC4yLTkuOWwtNC0xOWMtLjgtMy43IDEuNi03LjQgNS4zLTguMiAzLjctLjggNy40IDEuNiA4LjIgNS4zbDIuNSAxMS45eicgLz4KICA8cGF0aCBmaWxsPScjZjdjNzgwJyBzdHJva2U9JyNjNTg2MzgnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJwogICAgICAgIGQ9J00yNyAxMnYyMS41bS03LTYuNSAzLjUgMTcuNW01LjUtMSAxLjUgOG0tOS41LTItMi0xMC41JyAvPgogIDxwYXRoIGZpbGw9JyM0ZDU4NmInIHN0cm9rZT0nIzJjMzY0Micgc3Ryb2tlLXdpZHRoPScyJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJwogICAgICAgIGQ9J00xNSA0OGgyNmE0IDQgMCAwIDEgNCA0djZhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC00di02YTQgNCAwIDAgMSA0LTR6JyAvPgogIDxwYXRoIGZpbGw9JyM2OTc1OGYnIGQ9J00xNSA0OGgyNnYxNEgxNXonIG9wYWNpdHk9Jy4zNScvPgo8L3N2Zz4=") 6 2, auto;
 }
 
 *, *::before, *::after {
@@ -50,6 +51,7 @@ body {
     radial-gradient(circle at 65% 80%, var(--orb-violet), transparent 60%),
     linear-gradient(180deg, var(--page-top), var(--page-mid) 55%, var(--page-bottom));
   color: var(--text-strong);
+  cursor: var(--cursor-finger);
 }
 
 .background-lights {
@@ -96,7 +98,7 @@ body {
   border: 1px solid var(--glass-border);
   background: var(--glass);
   color: var(--text-strong);
-  cursor: pointer;
+  cursor: var(--cursor-finger);
   display: grid;
   place-items: center;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
@@ -573,13 +575,13 @@ body {
   background: var(--start-gradient);
   color: #2a072c;
   box-shadow: 0 18px 40px var(--start-shadow);
-  cursor: pointer;
+  cursor: var(--cursor-finger);
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .start-button:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: var(--cursor-finger);
 }
 
 .start-button:not(:disabled):hover {
@@ -620,7 +622,7 @@ body {
   text-transform: uppercase;
   background: var(--record-gradient);
   color: #120926;
-  cursor: pointer;
+  cursor: var(--cursor-finger);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, filter 0.2s ease;
 }
@@ -631,7 +633,7 @@ body {
 
 .record-button:disabled {
   opacity: 0.45;
-  cursor: not-allowed;
+  cursor: var(--cursor-finger);
 }
 
 .record-button:not(:disabled):hover {
