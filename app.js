@@ -46,6 +46,12 @@ const gameState = {
   isSpinning: false,
   timerIntervalId: null,
   audio: {},
+  audioGraph: {
+    context: null,
+    masterGain: null,
+    destination: null,
+    initialized: false,
+  },
   awaitingRespin: false,
 };
 
@@ -75,12 +81,15 @@ const audioSources = {
 };
 
 const recordingState = {
-  supported: typeof MediaRecorder !== 'undefined' && typeof HTMLCanvasElement.prototype.captureStream === 'function',
+  supported:
+    typeof MediaRecorder !== 'undefined' &&
+    typeof HTMLCanvasElement.prototype.captureStream === 'function',
   isRecording: false,
   chunks: [],
   recorder: null,
   frameRequest: null,
   stream: null,
+  canvasStream: null,
   previousUrl: null,
   scale: 1,
 };
@@ -470,7 +479,9 @@ function setupAudio() {
     try {
       const audio = new Audio(src);
       audio.preload = 'auto';
-      gameState.audio[key] = audio;
+      audio.muted = gameState.isMuted;
+      audio.setAttribute('data-audio-role', key);
+      gameState.audio[key] = { element: audio, connected: false };
     } catch (error) {
       console.warn('Audio unavailable', key, error);
     }
@@ -479,11 +490,19 @@ function setupAudio() {
 
 function playSound(name) {
   if (gameState.isMuted) return;
-  const audio = gameState.audio[name];
-  if (!audio) return;
+  const entry = gameState.audio[name];
+  if (!entry || !entry.element) return;
+  ensureAudioGraph();
+  const { context } = gameState.audioGraph;
+  if (context && context.state === 'suspended') {
+    context.resume().catch(() => {});
+  }
+  if (entry.element.muted && !gameState.audioGraph.masterGain) {
+    entry.element.muted = false;
+  }
   try {
-    audio.currentTime = 0;
-    const playPromise = audio.play();
+    entry.element.currentTime = 0;
+    const playPromise = entry.element.play();
     if (playPromise && typeof playPromise.catch === 'function') {
       playPromise.catch(() => {});
     }
@@ -498,6 +517,55 @@ function toggleMute() {
   const icon = ui.muteToggle.querySelector('.mute-icon');
   if (icon) {
     icon.textContent = gameState.isMuted ? '🔇' : '🔊';
+  }
+  if (gameState.audioGraph.masterGain) {
+    gameState.audioGraph.masterGain.gain.value = gameState.isMuted ? 0 : 1;
+  } else {
+    Object.values(gameState.audio).forEach((entry) => {
+      if (entry && entry.element) {
+        entry.element.muted = gameState.isMuted;
+      }
+    });
+  }
+}
+
+function ensureAudioGraph() {
+  if (gameState.audioGraph.initialized) {
+    return;
+  }
+  const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextCtor) {
+    gameState.audioGraph.initialized = true;
+    return;
+  }
+  try {
+    const context = new AudioContextCtor();
+    const masterGain = context.createGain();
+    masterGain.gain.value = gameState.isMuted ? 0 : 1;
+    masterGain.connect(context.destination);
+    const destination = context.createMediaStreamDestination();
+    masterGain.connect(destination);
+    Object.values(gameState.audio).forEach((entry) => {
+      if (!entry || !entry.element || entry.connected) return;
+      try {
+        const source = context.createMediaElementSource(entry.element);
+        source.connect(masterGain);
+        entry.source = source;
+        entry.element.muted = true;
+        entry.connected = true;
+      } catch (error) {
+        console.warn('Audio graph link failed', error);
+      }
+    });
+    gameState.audioGraph = {
+      context,
+      masterGain,
+      destination,
+      initialized: true,
+    };
+  } catch (error) {
+    console.warn('Audio graph unavailable', error);
+    gameState.audioGraph.initialized = true;
   }
 }
 
@@ -548,13 +616,23 @@ async function startRecording() {
     throw new Error('Capture engine missing');
   }
 
+  ensureAudioGraph();
+  const { context, destination } = gameState.audioGraph;
+  if (context && context.state === 'suspended') {
+    try {
+      await context.resume();
+    } catch (error) {
+      console.warn('Audio context resume failed', error);
+    }
+  }
+
   const target = document.querySelector('[data-record-target]');
   if (!target) {
     throw new Error('Record target not found');
   }
 
   const rect = target.getBoundingClientRect();
-  const scale = window.devicePixelRatio || 1;
+  const scale = Math.max(2, window.devicePixelRatio || 1);
   recordingState.scale = scale;
   const canvas = ui.captureCanvas;
   canvas.width = rect.width * scale;
@@ -563,9 +641,29 @@ async function startRecording() {
   canvas.style.height = `${rect.height}px`;
   const context = canvas.getContext('2d');
   recordingState.context = context;
+  if (context) {
+    context.imageSmoothingEnabled = true;
+  }
+
+  if (ui.recordPreview) {
+    try {
+      ui.recordPreview.pause();
+      ui.recordPreview.currentTime = 0;
+    } catch (error) {
+      // ignore preview reset errors
+    }
+  }
 
   const mimeType = getSupportedMimeType();
-  const stream = canvas.captureStream(30);
+  const canvasStream = canvas.captureStream(30);
+  recordingState.canvasStream = canvasStream;
+  let stream = canvasStream;
+  if (destination && destination.stream) {
+    const audioTracks = destination.stream.getAudioTracks();
+    if (audioTracks.length > 0) {
+      stream = new MediaStream([...canvasStream.getVideoTracks(), ...audioTracks]);
+    }
+  }
   recordingState.stream = stream;
   const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
   recordingState.recorder = recorder;
@@ -578,6 +676,7 @@ async function startRecording() {
   };
 
   recorder.onstop = () => {
+    recordingState.recorder = null;
     if (!recordingState.chunks.length) {
       updateRecordStatus('No recording captured');
       return;
@@ -609,7 +708,7 @@ async function startRecording() {
   ui.recordStop.disabled = false;
   ui.recordDownload.hidden = true;
   ui.recordPreview.hidden = true;
-  updateRecordStatus('Recording slot…');
+  updateRecordStatus('Recording slot with audio…');
   drawRecordingFrame(target);
 }
 
@@ -642,14 +741,18 @@ function stopRecording(cancelled = false) {
   if (recordingState.recorder && recordingState.recorder.state !== 'inactive') {
     recordingState.recorder.stop();
   }
-  if (recordingState.stream) {
-    recordingState.stream.getTracks().forEach((track) => track.stop());
-    recordingState.stream = null;
+  if (recordingState.canvasStream) {
+    recordingState.canvasStream.getTracks().forEach((track) => track.stop());
+    recordingState.canvasStream = null;
   }
+  recordingState.stream = null;
+  recordingState.context = null;
   ui.recordStart.disabled = false;
   ui.recordStop.disabled = true;
   if (cancelled) {
     updateRecordStatus('Recording cancelled');
+  } else {
+    updateRecordStatus('Finalising recording…');
   }
 }
 
