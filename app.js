@@ -2,6 +2,9 @@ const ui = {
   grid: document.getElementById('coin-grid'),
   startButton: document.getElementById('start-button'),
   muteToggle: document.querySelector('.mute-toggle'),
+  winOverlay: document.querySelector('.win-overlay'),
+  winBanner: document.querySelector('.win-banner'),
+  gameContainer: document.querySelector('.phone-screen'),
   counterBonus: document.querySelector('[data-counter-bonus]'),
   counterFS: document.querySelector('[data-counter-fs]'),
   jackpotValues: {
@@ -74,10 +77,73 @@ const symbolPool = [
   { type: 'respin', label: 'RE-SPIN', weight: 2 },
 ];
 
-const audioSources = {
-  click: 'sounds/click.mp3',
-  spin: 'sounds/spin.mp3',
-  win: 'sounds/win.mp3',
+const audioElementIds = {
+  click: 'sound-click',
+  spin: 'sound-spin',
+  win: 'sound-win',
+  bigWin: 'sound-big-win',
+  ambient: 'sound-ambient',
+};
+
+const soundManager = {
+  ambientEngaged: false,
+  init() {
+    this.ambientEngaged = false;
+  },
+  ensureAmbientLoop() {
+    if (this.ambientEngaged || gameState.isMuted) return;
+    this.ambientEngaged = true;
+    this.handleAmbientLoop();
+  },
+  handleAmbientLoop() {
+    const entry = gameState.audio.ambient;
+    if (!entry || !entry.element || gameState.isMuted) return;
+    try {
+      entry.element.loop = true;
+      entry.element.volume = 0.25;
+      const playPromise = entry.element.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          this.ambientEngaged = false;
+        });
+      }
+    } catch (error) {
+      console.warn('Ambient loop failed', error);
+      this.ambientEngaged = false;
+    }
+  },
+  playClick() {
+    this.ensureAmbientLoop();
+    playSound('click');
+  },
+  playSpin() {
+    this.ensureAmbientLoop();
+    playSound('spin');
+  },
+  stopSpin() {
+    const entry = gameState.audio.spin;
+    if (entry && entry.element) {
+      entry.element.pause();
+      entry.element.currentTime = 0;
+    }
+  },
+  playWin(amount) {
+    const big = amount >= gameState.bet * 20;
+    playSound(big ? 'bigWin' : 'win');
+    return big;
+  },
+  syncMuteState() {
+    if (gameState.isMuted) {
+      const entry = gameState.audio.ambient;
+      if (entry && entry.element) {
+        entry.element.pause();
+        entry.element.currentTime = 0;
+      }
+      this.ambientEngaged = false;
+    } else if (this.ambientEngaged) {
+      this.handleAmbientLoop();
+    }
+  },
 };
 
 const recordingState = {
@@ -102,6 +168,9 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 });
 
 let adminUpdating = false;
+let overlayTimeoutId = null;
+let bannerTimeoutId = null;
+let shakeTimeoutId = null;
 
 function init() {
   buildGrid();
@@ -329,6 +398,7 @@ function clampNumber(value, fallback) {
 
 function startSpin(trigger = 'manual') {
   if (gameState.isSpinning || gameState.awaitingRespin) return;
+  resetWinEffects();
   if (trigger === 'manual') {
     if (gameState.counters.freeSpins > 0) {
       gameState.counters.freeSpins -= 1;
@@ -342,8 +412,10 @@ function startSpin(trigger = 'manual') {
   }
   gameState.isSpinning = true;
   updateStartButtonState();
-  playSound('click');
-  setTimeout(() => playSound('spin'), 120);
+  if (trigger === 'manual') {
+    soundManager.playClick();
+  }
+  setTimeout(() => soundManager.playSpin(), trigger === 'manual' ? 120 : 40);
   const result = generateSpinResult();
   if (!ui.gridCells) return;
   ui.gridCells.forEach((cell) => {
@@ -351,6 +423,7 @@ function startSpin(trigger = 'manual') {
     cell.firstChild.textContent = '';
   });
   runSpinAnimation(result).then(() => {
+    soundManager.stopSpin();
     const outcome = applySpinResult(result);
     gameState.isSpinning = false;
     updateUI();
@@ -449,19 +522,36 @@ function applySpinResult(result) {
   let bonusAdd = 0;
   let fsAdd = 0;
   let triggeredRespin = false;
-  result.forEach((symbol) => {
+  const winningCells = [];
+  const bigWinCells = new Set();
+  const markWinningCell = (index, isBig = false) => {
+    if (!Number.isInteger(index)) return;
+    if (!winningCells.includes(index)) {
+      winningCells.push(index);
+    }
+    if (isBig) {
+      bigWinCells.add(index);
+    }
+  };
+  result.forEach((symbol, index) => {
     switch (symbol.type) {
       case 'multiplier':
         multiplierSum += symbol.multiplier;
+        if (symbol.multiplier > 1) {
+          markWinningCell(index, symbol.tier === 'high' || symbol.multiplier >= 50);
+        }
         break;
       case 'win':
         directWin += symbol.amount;
+        markWinningCell(index, symbol.amount >= 100);
         break;
       case 'bonus':
         bonusAdd += symbol.amount;
+        markWinningCell(index);
         break;
       case 'free-spins':
         fsAdd += symbol.amount;
+        markWinningCell(index);
         break;
       case 'respin':
         triggeredRespin = true;
@@ -481,13 +571,21 @@ function applySpinResult(result) {
   if (totalWin > 0 && totalWin < gameState.minWin) {
     totalWin = gameState.minWin;
   }
+  const isBigWin = totalWin >= gameState.bet * 20;
+  if (winningCells.length) {
+    highlightWinningCells(winningCells, bigWinCells, isBigWin && totalWin > 0);
+  }
   if (totalWin > 0) {
     gameState.balance += totalWin;
     gameState.lastWin = totalWin;
-    playSound('win');
     highlightWin();
+    triggerWinOverlay(isBigWin);
+    showWinBanner(totalWin, isBigWin);
+    soundManager.playWin(totalWin);
   } else {
     gameState.lastWin = 0;
+    hideWinOverlay();
+    hideWinBanner();
   }
   if (triggeredRespin) {
     gameState.awaitingRespin = true;
@@ -498,7 +596,7 @@ function applySpinResult(result) {
       startSpin('respin');
     }, 700);
   }
-  return { totalWin, triggeredRespin };
+  return { totalWin, triggeredRespin, isBigWin };
 }
 
 function highlightWin() {
@@ -508,17 +606,114 @@ function highlightWin() {
   ui.lastWin.classList.add('highlight');
 }
 
-function setupAudio() {
-  Object.entries(audioSources).forEach(([name, src]) => {
-    try {
-      const audio = new Audio(src);
-      audio.preload = 'auto';
-      audio.muted = gameState.isMuted;
-      gameState.audio[name] = { element: audio, connected: false };
-    } catch (error) {
-      console.warn('Audio unavailable', name, error);
-    }
+function resetWinEffects() {
+  if (ui.gridCells) {
+    ui.gridCells.forEach((cell) => {
+      cell.classList.remove('cell-win', 'cell-big-win');
+    });
+  }
+  hideWinOverlay();
+  hideWinBanner();
+  if (ui.gameContainer) {
+    ui.gameContainer.classList.remove('game-container-shake');
+  }
+  if (shakeTimeoutId) {
+    clearTimeout(shakeTimeoutId);
+    shakeTimeoutId = null;
+  }
+}
+
+function highlightWinningCells(winners = [], bigWinners = new Set(), allowShake = false) {
+  if (!ui.gridCells || !winners.length) return;
+  const bigSet = bigWinners instanceof Set ? bigWinners : new Set(bigWinners);
+  winners.forEach((index) => {
+    const cell = ui.gridCells[index];
+    if (!cell) return;
+    const isBig = bigSet.has(index);
+    const className = isBig ? 'cell-big-win' : 'cell-win';
+    cell.classList.add(className);
+    setTimeout(() => {
+      if (cell) {
+        cell.classList.remove('cell-win', 'cell-big-win');
+      }
+    }, isBig ? 1800 : 1400);
   });
+  if (allowShake && ui.gameContainer) {
+    ui.gameContainer.classList.remove('game-container-shake');
+    void ui.gameContainer.offsetWidth;
+    ui.gameContainer.classList.add('game-container-shake');
+    if (shakeTimeoutId) {
+      clearTimeout(shakeTimeoutId);
+    }
+    shakeTimeoutId = setTimeout(() => {
+      if (ui.gameContainer) {
+        ui.gameContainer.classList.remove('game-container-shake');
+      }
+      shakeTimeoutId = null;
+    }, 700);
+  }
+}
+
+function triggerWinOverlay(isBigWin) {
+  if (!ui.winOverlay) return;
+  ui.winOverlay.classList.add('win-overlay-active');
+  if (isBigWin) {
+    ui.winOverlay.classList.add('win-overlay-big');
+  } else {
+    ui.winOverlay.classList.remove('win-overlay-big');
+  }
+  if (overlayTimeoutId) {
+    clearTimeout(overlayTimeoutId);
+  }
+  overlayTimeoutId = setTimeout(() => hideWinOverlay(), isBigWin ? 2300 : 1600);
+}
+
+function hideWinOverlay() {
+  if (!ui.winOverlay) return;
+  ui.winOverlay.classList.remove('win-overlay-active', 'win-overlay-big');
+  if (overlayTimeoutId) {
+    clearTimeout(overlayTimeoutId);
+    overlayTimeoutId = null;
+  }
+}
+
+function showWinBanner(amount, isBigWin) {
+  if (!ui.winBanner) return;
+  ui.winBanner.textContent = `${isBigWin ? 'BIG WIN' : 'WIN'} ${formatCurrency(amount)}`;
+  ui.winBanner.classList.add('win-banner-visible');
+  if (isBigWin) {
+    ui.winBanner.classList.add('win-banner-big');
+  } else {
+    ui.winBanner.classList.remove('win-banner-big');
+  }
+  if (bannerTimeoutId) {
+    clearTimeout(bannerTimeoutId);
+  }
+  bannerTimeoutId = setTimeout(() => hideWinBanner(), isBigWin ? 2400 : 1700);
+}
+
+function hideWinBanner() {
+  if (!ui.winBanner) return;
+  ui.winBanner.classList.remove('win-banner-visible', 'win-banner-big');
+  if (bannerTimeoutId) {
+    clearTimeout(bannerTimeoutId);
+    bannerTimeoutId = null;
+  }
+}
+
+function setupAudio() {
+  Object.entries(audioElementIds).forEach(([name, id]) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.preload = 'auto';
+    element.muted = gameState.isMuted;
+    if (name === 'ambient') {
+      element.loop = true;
+      element.volume = 0.25;
+    }
+    gameState.audio[name] = { element, connected: false };
+  });
+  soundManager.init();
 }
 
 function ensureAudioGraph() {
@@ -593,6 +788,7 @@ function toggleMute() {
       }
     });
   }
+  soundManager.syncMuteState();
 }
 
 function parseTimer(value) {
