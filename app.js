@@ -4,6 +4,7 @@ const ui = {
   muteToggle: document.querySelector('.mute-toggle'),
   winOverlay: document.querySelector('.win-overlay'),
   winBanner: document.querySelector('.win-banner'),
+  winBannerText: document.querySelector('.win-banner__text'),
   gameContainer: document.querySelector('.phone-screen'),
   counterBonus: document.querySelector('[data-counter-bonus]'),
   counterFS: document.querySelector('[data-counter-fs]'),
@@ -679,7 +680,9 @@ function hideWinOverlay() {
 
 function showWinBanner(amount, isBigWin) {
   if (!ui.winBanner) return;
-  ui.winBanner.textContent = `${isBigWin ? 'BIG WIN' : 'WIN'} ${formatCurrency(amount)}`;
+  const label = `${isBigWin ? 'BIG WIN' : 'WIN'} ${formatCurrency(amount)}`;
+  const target = ui.winBannerText || ui.winBanner;
+  target.textContent = label;
   ui.winBanner.classList.add('win-banner-visible');
   if (isBigWin) {
     ui.winBanner.classList.add('win-banner-big');
