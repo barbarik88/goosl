@@ -727,7 +727,8 @@ body {
   font-size: 0.85rem;
 }
 
-.admin-field input {
+.admin-field input,
+.admin-field select {
   border-radius: 0.6rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.04);
@@ -735,6 +736,10 @@ body {
   padding: 0.55rem 0.65rem;
   font-size: 1rem;
   font-family: inherit;
+}
+
+.admin-field select {
+  cursor: var(--cursor-finger);
 }
 
 #capture-canvas {

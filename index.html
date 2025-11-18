@@ -10,7 +10,7 @@
     <div class="background-lights" aria-hidden="true"></div>
     <main class="studio">
       <header class="studio__header">
-        <h1 class="studio__brand">Coin Strike Studio</h1>
+        <h1 class="studio__brand" data-i18n="tagline">Внеси депозит чтобы сыграть в новый Coin Strike 2.0</h1>
         <button
           class="mute-toggle"
           type="button"
@@ -63,71 +63,71 @@
                 <span class="payment-badge" role="listitem">MASTERCARD</span>
                 <span class="payment-badge" role="listitem">APPLE PAY</span>
                 <span class="payment-badge" role="listitem">GOOGLE PAY</span>
-                <span class="payment-badge" role="listitem">BANK</span>
-                <span class="payment-badge" role="listitem">CRYPTO</span>
+                <span class="payment-badge" role="listitem" data-i18n="paymentBank">BANK</span>
+                <span class="payment-badge" role="listitem" data-i18n="paymentCrypto">CRYPTO</span>
               </div>
               <div class="counter-row">
                 <article class="counter-card">
-                  <span class="counter-card__label">Bonus</span>
+                  <span class="counter-card__label" data-i18n="bonusLabel">Bonus</span>
                   <span class="counter-card__value" data-counter-bonus>€2,400</span>
                 </article>
                 <article class="counter-card">
-                  <span class="counter-card__label">Free Spins</span>
+                  <span class="counter-card__label" data-i18n="fsLabel">Free Spins</span>
                   <span class="counter-card__value" data-counter-fs>212</span>
                 </article>
               </div>
               <div class="jackpot-row" role="group" aria-label="Jackpots">
                 <article class="jackpot grand">
-                  <span class="jackpot__label">Grand</span>
+                  <span class="jackpot__label" data-i18n="grand">Grand</span>
                   <span class="jackpot__value" data-jackpot="grand">€0</span>
                 </article>
                 <article class="jackpot major">
-                  <span class="jackpot__label">Major</span>
+                  <span class="jackpot__label" data-i18n="major">Major</span>
                   <span class="jackpot__value" data-jackpot="major">€0</span>
                 </article>
                 <article class="jackpot minor">
-                  <span class="jackpot__label">Minor</span>
+                  <span class="jackpot__label" data-i18n="minor">Minor</span>
                   <span class="jackpot__value" data-jackpot="minor">€0</span>
                 </article>
                 <article class="jackpot mini">
-                  <span class="jackpot__label">Mini</span>
+                  <span class="jackpot__label" data-i18n="mini">Mini</span>
                   <span class="jackpot__value" data-jackpot="mini">€0</span>
                 </article>
               </div>
               <div class="logo-stack" aria-hidden="true">
-                <span class="logo-stack__top">Coin</span>
-                <span class="logo-stack__bottom">Strike</span>
+                <span class="logo-stack__top" data-i18n="logoTop">Coin</span>
+                <span class="logo-stack__bottom" data-i18n="logoBottom">Strike</span>
               </div>
               <section class="coin-grid" id="coin-grid" role="grid" aria-label="Coin Strike board"></section>
               <div class="status-strip">
                 <div class="status-tile">
-                  <span class="status-tile__label">Bonus pot</span>
+                  <span class="status-tile__label" data-i18n="bonusPot">Bonus pot</span>
                   <span class="status-tile__value" data-bonus-pot>€900</span>
                 </div>
                 <div class="status-tile">
-                  <span class="status-tile__label">Min win</span>
+                  <span class="status-tile__label" data-i18n="minWin">Min win</span>
                   <span class="status-tile__value" data-min-win>€10</span>
                 </div>
                 <div class="status-tile">
-                  <span class="status-tile__label">Timer</span>
+                  <span class="status-tile__label" data-i18n="timer">Timer</span>
                   <span class="status-tile__value" data-timer>07:57</span>
                 </div>
               </div>
               <div class="balance-strip">
                 <div class="balance-cell">
-                  <span class="balance-cell__label">Balance</span>
+                  <span class="balance-cell__label" data-i18n="balance">Balance</span>
                   <span class="balance-cell__value" data-balance>€9,012</span>
                 </div>
                 <div class="balance-cell">
-                  <span class="balance-cell__label">Bet</span>
+                  <span class="balance-cell__label" data-i18n="bet">Bet</span>
                   <span class="balance-cell__value" data-bet>€2</span>
                 </div>
                 <div class="balance-cell win">
-                  <span class="balance-cell__label">Last win</span>
+                  <span class="balance-cell__label" data-i18n="lastWin">Last win</span>
                   <span class="balance-cell__value" data-last-win>€104</span>
                 </div>
               </div>
-              <button id="start-button" class="start-button" type="button">Start</button>
+              <button id="start-button" class="start-button" type="button" data-i18n="start">Start</button>
             </div>
           </div>
           <section class="record-card" aria-label="Recording controls">
@@ -198,6 +198,17 @@
             </fieldset>
             <fieldset>
               <legend>Presentation</legend>
+              <label class="admin-field">
+                <span>Language</span>
+                <select data-admin-field="language">
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                  <option value="de">Deutsch</option>
+                  <option value="da">Dansk</option>
+                  <option value="it">Italiano</option>
+                  <option value="ru">Русский</option>
+                </select>
+              </label>
               <label class="admin-field">
                 <span>Last win (€)</span>
                 <input type="number" step="1" data-admin-field="lastWin" />

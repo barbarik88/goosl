@@ -35,6 +35,7 @@ const gameState = {
   bonusPot: 900,
   minWin: 10,
   timerSeconds: 7 * 60 + 57,
+  language: 'ru',
   counters: {
     bonus: 2400,
     freeSpins: 212,
@@ -46,6 +47,7 @@ const gameState = {
     mini: 1034,
   },
   lastWin: 104,
+  currentGrid: [],
   isSpinning: false,
   awaitingRespin: false,
   isMuted: false,
@@ -84,6 +86,165 @@ const audioElementIds = {
   win: 'sound-win',
   bigWin: 'sound-big-win',
   ambient: 'sound-ambient',
+};
+
+const translations = {
+  en: {
+    tagline: 'Deposit to play the new Coin Strike 2.0',
+    bonusLabel: 'Bonus',
+    fsLabel: 'Free Spins',
+    grand: 'Grand',
+    major: 'Major',
+    minor: 'Minor',
+    mini: 'Mini',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Bonus pot',
+    minWin: 'Min win',
+    timer: 'Timer',
+    balance: 'Balance',
+    bet: 'Bet',
+    lastWin: 'Last win',
+    start: 'Start',
+    winLabel: 'WIN',
+    bigWinLabel: 'BIG WIN',
+    symbolWin: 'WIN',
+    symbolBonus: 'BONUS',
+    symbolRespin: 'RE-SPIN',
+    symbolFreeSpins: 'FS',
+    paymentBank: 'BANK',
+    paymentCrypto: 'CRYPTO',
+  },
+  fr: {
+    tagline: 'Déposez pour jouer au nouveau Coin Strike 2.0',
+    bonusLabel: 'Bonus',
+    fsLabel: 'Tours gratuits',
+    grand: 'Grand',
+    major: 'Major',
+    minor: 'Mineur',
+    mini: 'Mini',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Cagnotte bonus',
+    minWin: 'Gain min.',
+    timer: 'Minuteur',
+    balance: 'Solde',
+    bet: 'Mise',
+    lastWin: 'Dernier gain',
+    start: 'Démarrer',
+    winLabel: 'GAIN',
+    bigWinLabel: 'GROS GAIN',
+    symbolWin: 'GAIN',
+    symbolBonus: 'BONUS',
+    symbolRespin: 'RE-SPIN',
+    symbolFreeSpins: 'Tours',
+    paymentBank: 'BANQUE',
+    paymentCrypto: 'CRYPTO',
+  },
+  de: {
+    tagline: 'Zahle ein, um den neuen Coin Strike 2.0 zu spielen',
+    bonusLabel: 'Bonus',
+    fsLabel: 'Freispiele',
+    grand: 'Grand',
+    major: 'Major',
+    minor: 'Minor',
+    mini: 'Mini',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Bonus-Topf',
+    minWin: 'Mindestgewinn',
+    timer: 'Timer',
+    balance: 'Guthaben',
+    bet: 'Einsatz',
+    lastWin: 'Letzter Gewinn',
+    start: 'Start',
+    winLabel: 'GEWINN',
+    bigWinLabel: 'GROSSER GEWINN',
+    symbolWin: 'GEWINN',
+    symbolBonus: 'BONUS',
+    symbolRespin: 'RE-SPIN',
+    symbolFreeSpins: 'FS',
+    paymentBank: 'BANK',
+    paymentCrypto: 'KRYPTO',
+  },
+  da: {
+    tagline: 'Indbetal for at spille den nye Coin Strike 2.0',
+    bonusLabel: 'Bonus',
+    fsLabel: 'Gratis spins',
+    grand: 'Grand',
+    major: 'Major',
+    minor: 'Minor',
+    mini: 'Mini',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Bonuspulje',
+    minWin: 'Min. gevinst',
+    timer: 'Timer',
+    balance: 'Saldo',
+    bet: 'Indsats',
+    lastWin: 'Sidste gevinst',
+    start: 'Start',
+    winLabel: 'GEVINST',
+    bigWinLabel: 'STOR GEVINST',
+    symbolWin: 'GEVINST',
+    symbolBonus: 'BONUS',
+    symbolRespin: 'RE-SPIN',
+    symbolFreeSpins: 'FS',
+    paymentBank: 'BANK',
+    paymentCrypto: 'Krypto',
+  },
+  it: {
+    tagline: 'Deposita per giocare al nuovo Coin Strike 2.0',
+    bonusLabel: 'Bonus',
+    fsLabel: 'Giri gratis',
+    grand: 'Grand',
+    major: 'Major',
+    minor: 'Minor',
+    mini: 'Mini',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Fondo bonus',
+    minWin: 'Vincita min.',
+    timer: 'Timer',
+    balance: 'Saldo',
+    bet: 'Puntata',
+    lastWin: "Ultima vincita",
+    start: 'Start',
+    winLabel: 'VINCITA',
+    bigWinLabel: 'SUPER VINCITA',
+    symbolWin: 'VINCITA',
+    symbolBonus: 'BONUS',
+    symbolRespin: 'RE-SPIN',
+    symbolFreeSpins: 'Giri',
+    paymentBank: 'BANCA',
+    paymentCrypto: 'CRYPTO',
+  },
+  ru: {
+    tagline: 'Внеси депозит чтобы сыграть в новый Coin Strike 2.0',
+    bonusLabel: 'Бонус',
+    fsLabel: 'Фриспины',
+    grand: 'Гранд',
+    major: 'Мейджор',
+    minor: 'Минор',
+    mini: 'Мини',
+    logoTop: 'Coin',
+    logoBottom: 'Strike',
+    bonusPot: 'Бонус банк',
+    minWin: 'Мин. выигрыш',
+    timer: 'Таймер',
+    balance: 'Баланс',
+    bet: 'Ставка',
+    lastWin: 'Последний выигрыш',
+    start: 'Старт',
+    winLabel: 'ВЫИГРЫШ',
+    bigWinLabel: 'БОЛЬШОЙ ВЫИГРЫШ',
+    symbolWin: 'ВЫИГРЫШ',
+    symbolBonus: 'БОНУС',
+    symbolRespin: 'РЕ-СПИН',
+    symbolFreeSpins: 'FS',
+    paymentBank: 'БАНК',
+    paymentCrypto: 'КРИПТО',
+  },
 };
 
 const soundManager = {
@@ -162,11 +323,7 @@ const recordingState = {
   scale: 1,
 };
 
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'EUR',
-  maximumFractionDigits: 0,
-});
+const currencyFormatters = {};
 
 let adminUpdating = false;
 let overlayTimeoutId = null;
@@ -243,12 +400,26 @@ function startTimer() {
   }, 1000);
 }
 
+function applyTranslations() {
+  const dict = getTranslations();
+  document.documentElement.lang = gameState.language || 'en';
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const key = node.dataset.i18n;
+    if (!key || !(key in dict)) return;
+    node.textContent = dict[key];
+  });
+  if (Array.isArray(gameState.currentGrid) && gameState.currentGrid.length === 9) {
+    updateGridDisplay(gameState.currentGrid);
+  }
+}
+
 function updateUI() {
+  applyTranslations();
   if (ui.counterBonus) {
     ui.counterBonus.textContent = formatCurrency(gameState.counters.bonus);
   }
   if (ui.counterFS) {
-    ui.counterFS.textContent = gameState.counters.freeSpins.toLocaleString('en-US');
+    ui.counterFS.textContent = formatNumber(gameState.counters.freeSpins);
   }
   if (ui.bonusPot) {
     ui.bonusPot.textContent = formatCurrency(gameState.bonusPot);
@@ -329,14 +500,17 @@ function updateAdminForm() {
       case 'jackpotMinor':
         input.value = Math.round(gameState.jackpots.minor);
         break;
-      case 'jackpotMini':
-        input.value = Math.round(gameState.jackpots.mini);
-        break;
-      case 'lastWin':
-        input.value = Math.round(gameState.lastWin);
-        break;
-      default:
-        break;
+    case 'jackpotMini':
+      input.value = Math.round(gameState.jackpots.mini);
+      break;
+    case 'lastWin':
+      input.value = Math.round(gameState.lastWin);
+      break;
+    case 'language':
+      input.value = gameState.language;
+      break;
+    default:
+      break;
     }
   });
 }
@@ -387,6 +561,11 @@ function handleAdminInput(event) {
     case 'lastWin':
       gameState.lastWin = Math.max(0, clampNumber(parseFloat(raw), gameState.lastWin));
       break;
+    case 'language': {
+      const nextLang = raw || 'en';
+      gameState.language = translations[nextLang] ? nextLang : gameState.language;
+      break;
+    }
     default:
       break;
   }
@@ -460,6 +639,24 @@ function runSpinAnimation(result) {
   });
 }
 
+function resolveSymbolLabel(symbol) {
+  const dict = getTranslations();
+  switch (symbol.type) {
+    case 'multiplier':
+      return symbol.label || `x${symbol.multiplier || 1}`;
+    case 'win':
+      return `${dict.symbolWin}\n${formatCurrency(symbol.amount)}`;
+    case 'bonus':
+      return `${dict.symbolBonus}\n+${formatCurrency(symbol.amount)}`;
+    case 'free-spins':
+      return `+${symbol.amount} ${dict.symbolFreeSpins}`;
+    case 'respin':
+      return dict.symbolRespin;
+    default:
+      return symbol.label || '';
+  }
+}
+
 function presentSymbol(cell, symbol) {
   if (!cell || !symbol) return;
   cell.className = 'coin-cell';
@@ -483,11 +680,13 @@ function presentSymbol(cell, symbol) {
     default:
       cell.classList.add('multiplier');
   }
-  cell.firstChild.innerHTML = symbol.label.replace(/\n/g, '<br>');
+  const resolvedLabel = resolveSymbolLabel(symbol);
+  cell.firstChild.innerHTML = resolvedLabel.replace(/\n/g, '<br>');
 }
 
 function updateGridDisplay(result) {
   if (!ui.gridCells) return;
+  gameState.currentGrid = result.map((symbol) => ({ ...symbol }));
   result.forEach((symbol, index) => {
     presentSymbol(ui.gridCells[index], symbol);
   });
@@ -680,7 +879,8 @@ function hideWinOverlay() {
 
 function showWinBanner(amount, isBigWin) {
   if (!ui.winBanner) return;
-  const label = `${isBigWin ? 'BIG WIN' : 'WIN'} ${formatCurrency(amount)}`;
+  const dict = getTranslations();
+  const label = `${isBigWin ? dict.bigWinLabel : dict.winLabel} ${formatCurrency(amount)}`;
   const target = ui.winBannerText || ui.winBanner;
   target.textContent = label;
   ui.winBanner.classList.add('win-banner-visible');
@@ -810,8 +1010,47 @@ function formatTimer(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
+function getTranslations() {
+  return translations[gameState.language] || translations.en;
+}
+
+function getLocaleFromLanguage(lang) {
+  switch (lang) {
+    case 'fr':
+      return 'fr-FR';
+    case 'de':
+      return 'de-DE';
+    case 'da':
+      return 'da-DK';
+    case 'it':
+      return 'it-IT';
+    case 'ru':
+      return 'ru-RU';
+    default:
+      return 'en-US';
+  }
+}
+
+function getCurrencyFormatter() {
+  const locale = getLocaleFromLanguage(gameState.language);
+  if (!currencyFormatters[locale]) {
+    currencyFormatters[locale] = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    });
+  }
+  return currencyFormatters[locale];
+}
+
+function formatNumber(value) {
+  const locale = getLocaleFromLanguage(gameState.language);
+  return Number(value ?? 0).toLocaleString(locale);
+}
+
 function formatCurrency(value) {
-  return currencyFormatter.format(Math.max(0, Math.round(value)));
+  const formatter = getCurrencyFormatter();
+  return formatter.format(Math.max(0, Math.round(value)));
 }
 
 function setupRecording() {
