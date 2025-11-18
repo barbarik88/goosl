@@ -2,38 +2,48 @@
   color-scheme: only light;
   --font-display: 'Trebuchet MS', 'Segoe UI', 'Arial Black', system-ui;
   --font-body: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  --page-top: #0b0f2b;
-  --page-mid: #27145f;
-  --page-bottom: #040519;
-  --orb-cyan: rgba(67, 189, 255, 0.4);
-  --orb-violet: rgba(148, 71, 255, 0.35);
-  --orb-gold: rgba(255, 184, 80, 0.28);
+  --bg-main: #020b22;
+  --bg-frame-outer: #0a1d4f;
+  --bg-frame-inner: linear-gradient(180deg, #0c265c, #051331 70%);
+  --bg-panel: rgba(13, 32, 76, 0.8);
+  --bg-grid-cell: linear-gradient(180deg, #1b4f9a, #0d2d64 62%, #082450);
+  --bg-grid-cell-win: linear-gradient(180deg, #2f6ed1, #1a4590 60%, #103066);
+  --page-top: #03102d;
+  --page-mid: #061c46;
+  --page-bottom: #040d26;
+  --orb-cyan: rgba(74, 178, 255, 0.28);
+  --orb-violet: rgba(45, 97, 191, 0.32);
+  --orb-gold: rgba(255, 214, 102, 0.24);
   --text-strong: #ffffff;
-  --text-soft: rgba(255, 255, 255, 0.78);
-  --glass: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --phone-border: linear-gradient(135deg, #ffe9b0, #f68fff, #4d74ff);
-  --screen-top: #2a1554;
-  --screen-bottom: #0c0826;
-  --badge-bg: rgba(12, 16, 45, 0.55);
-  --bonus-gradient: linear-gradient(140deg, #ffd772, #ff9a3b);
-  --fs-gradient: linear-gradient(140deg, #5fe0ff, #4b7eff);
-  --jackpot-grand: linear-gradient(140deg, #ffe58b, #ff6b3d);
-  --jackpot-major: linear-gradient(140deg, #ff96ec, #a03dff);
-  --jackpot-minor: linear-gradient(140deg, #7df9ff, #1f7dff);
-  --jackpot-mini: linear-gradient(140deg, #b8ff89, #33d876);
-  --coin-gold: linear-gradient(140deg, #fff3c2, #ffbd47 58%, #f86b34);
-  --coin-silver: linear-gradient(140deg, #f6fbff, #bcd6ff 62%, #7ca8ff);
-  --coin-purple: linear-gradient(140deg, #f6e9ff, #c38bff 54%, #783bff);
-  --coin-green: linear-gradient(140deg, #e2ffe4, #7ff0b3 60%, #1bbb6f);
-  --coin-shadow: rgba(5, 2, 26, 0.5);
-  --strip-bg: rgba(6, 7, 26, 0.8);
-  --start-gradient: linear-gradient(145deg, #ffe988, #ff7b4b 52%, #f735a7);
-  --start-shadow: rgba(0, 0, 0, 0.6);
-  --admin-bg: rgba(13, 9, 34, 0.78);
-  --admin-border: rgba(255, 255, 255, 0.12);
-  --record-gradient: linear-gradient(135deg, #4df8ff, #7a35e7);
-  --record-stop-gradient: linear-gradient(135deg, #ff7a88, #ff3d5b);
+  --text-soft: rgba(210, 230, 255, 0.8);
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --phone-border: linear-gradient(135deg, #0b1c4f, #17449b 50%, #37b9ff 90%);
+  --screen-top: #0a2a67;
+  --screen-bottom: #04122f;
+  --badge-bg: rgba(12, 33, 82, 0.65);
+  --bonus-gradient: linear-gradient(140deg, #0f2f6e, #1559b4);
+  --fs-gradient: linear-gradient(140deg, #0f3a87, #2bb6ff);
+  --jackpot-grand: linear-gradient(140deg, #ff5f43, #ffb347);
+  --jackpot-major: linear-gradient(140deg, #d62b63, #ff8fb1);
+  --jackpot-minor: linear-gradient(140deg, #1f7dff, #7ce7ff);
+  --jackpot-mini: linear-gradient(140deg, #3bc984, #9dffb8);
+  --coin-gold: linear-gradient(140deg, #fff7c9, #ffd54f 58%, #ff9f1c);
+  --coin-silver: linear-gradient(140deg, #eef4ff, #b0c7ff 62%, #6c99ff);
+  --coin-purple: linear-gradient(140deg, #eaf4ff, #95c3ff 54%, #2b63c7);
+  --coin-green: linear-gradient(140deg, #e3ffe6, #7aecc1 60%, #1ca665);
+  --coin-shadow: rgba(0, 10, 36, 0.55);
+  --strip-bg: rgba(5, 18, 52, 0.85);
+  --accent-gold: #ffd54f;
+  --accent-red: #ff5f43;
+  --accent-green: #3bc984;
+  --accent-cyan: #7ce7ff;
+  --start-gradient: linear-gradient(145deg, #0bc0ff, #1b7cff 55%, #ffd74f);
+  --start-shadow: rgba(5, 12, 38, 0.65);
+  --admin-bg: rgba(6, 18, 48, 0.9);
+  --admin-border: rgba(122, 183, 255, 0.22);
+  --record-gradient: linear-gradient(135deg, #1c7cff, #3ac9ff);
+  --record-stop-gradient: linear-gradient(135deg, #ff6b7d, #ff2f55);
   --cursor-finger: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2NCcgaGVpZ2h0PSc2NCcgdmlld0JveD0nMCAwIDY0IDY0Jz4KICA8cGF0aCBmaWxsPScjZmNkMjlmJyBzdHJva2U9JyNjNTg2MzgnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJwogICAgICAgIGQ9J00yOCAxMmMwLTMuMyAyLjctNiA2LTZzNiAyLjcgNiA2djE3LjVjMS0xLjIgMi43LTIgNC41LTIgMy45IDAgNyAzLjEgNyA3djZjMCA3LjQtNS4zIDEzLjctMTIuNiAxNC43TDI5IDU3Yy02LjcgMS0xMi44LTMuMy0xNC4yLTkuOWwtNC0xOWMtLjgtMy43IDEuNi03LjQgNS4zLTguMiAzLjctLjggNy40IDEuNiA4LjIgNS4zbDIuNSAxMS45eicgLz4KICA8cGF0aCBmaWxsPScjZjdjNzgwJyBzdHJva2U9JyNjNTg2MzgnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJwogICAgICAgIGQ9J00yNyAxMnYyMS41bS03LTYuNSAzLjUgMTcuNW01LjUtMSAxLjUgOG0tOS41LTItMi0xMC41JyAvPgogIDxwYXRoIGZpbGw9JyM0ZDU4NmInIHN0cm9rZT0nIzJjMzY0Micgc3Ryb2tlLXdpZHRoPScyJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJwogICAgICAgIGQ9J00xNSA0OGgyNmE0IDQgMCAwIDEgNCA0djZhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC00di02YTQgNCAwIDAgMSA0LTR6JyAvPgogIDxwYXRoIGZpbGw9JyM2OTc1OGYnIGQ9J00xNSA0OGgyNnYxNEgxNXonIG9wYWNpdHk9Jy4zNScvPgo8L3N2Zz4=") 6 2, auto;
 }
 
@@ -164,7 +174,7 @@ body {
   width: 100%;
   height: 100%;
   border-radius: clamp(1.6rem, 4vw, 2.1rem);
-  background: linear-gradient(180deg, var(--screen-top), var(--screen-bottom));
+  background: var(--bg-frame-inner);
   padding: clamp(1rem, 2.4vw, 1.4rem);
   display: flex;
   flex-direction: column;
@@ -248,15 +258,15 @@ body {
   font-weight: 900;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #2c1200;
-  text-shadow: 0 3px 18px rgba(255, 255, 255, 0.65), 0 0 12px rgba(255, 211, 128, 0.8);
+  color: #021531;
+  text-shadow: 0 3px 18px rgba(255, 255, 255, 0.55), 0 0 14px rgba(124, 184, 255, 0.9);
   opacity: 0;
   transform: translate(-50%, -40%) scale(0.82);
   transition: opacity 0.3s ease, transform 0.3s ease;
   border-radius: 2.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  background: linear-gradient(120deg, #fffbe4, #ffd38f 45%, #ff9d6c);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4), inset 0 0 18px rgba(255, 255, 255, 0.45);
+  border: 2px solid rgba(124, 184, 255, 0.65);
+  background: linear-gradient(120deg, #fefbe7, #ffd54f 40%, #1a6ed3 90%);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.4), inset 0 0 18px rgba(255, 255, 255, 0.35);
   white-space: nowrap;
 }
 
@@ -333,7 +343,7 @@ body {
   padding: 0.4rem 0.65rem;
   border-radius: 999px;
   background: var(--badge-bg);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(122, 183, 255, 0.35);
   font-weight: 700;
 }
 
@@ -346,8 +356,8 @@ body {
 .counter-card {
   padding: 0.65rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-panel);
+  border: 1px solid rgba(122, 183, 255, 0.2);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -356,9 +366,20 @@ body {
   letter-spacing: 0.08em;
 }
 
+.counter-card:first-child {
+  background: var(--bonus-gradient);
+  border-color: rgba(255, 213, 79, 0.75);
+}
+
+.counter-card:last-child {
+  background: var(--fs-gradient);
+  border-color: rgba(124, 184, 255, 0.65);
+}
+
 .counter-card__value {
   font-size: 1rem;
   font-weight: 700;
+  color: var(--accent-gold, #ffd54f);
 }
 
 .jackpot-row {
@@ -374,12 +395,13 @@ body {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #1b1030;
+  color: #fff8d4;
   font-weight: 700;
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
   animation: jackpotPulse 4s ease-in-out infinite;
+  border: 1px solid rgba(255, 213, 79, 0.6);
 }
 
 .jackpot::after {
@@ -394,13 +416,13 @@ body {
 .jackpot__label {
   display: block;
   font-size: 0.65rem;
-  color: rgba(27, 16, 48, 0.75);
+  color: rgba(10, 14, 36, 0.75);
 }
 
 .jackpot__value {
   display: block;
   font-size: 0.95rem;
-  color: #10081f;
+  color: #fff8d4;
 }
 
 .jackpot.grand {
@@ -436,7 +458,7 @@ body {
 .logo-stack__bottom {
   display: block;
   font-size: 1.6rem;
-  color: var(--text-strong);
+  color: var(--accent-gold);
 }
 
 .coin-grid {
@@ -451,8 +473,8 @@ body {
   border-radius: 1.4rem;
   padding: 0.75rem;
   min-height: 4.1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-grid-cell);
+  border: 1px solid rgba(124, 184, 255, 0.35);
   display: grid;
   place-items: center;
   text-align: center;
@@ -493,22 +515,22 @@ body {
 
 .coin-cell.multiplier.high {
   background: var(--coin-purple);
-  color: #2a064e;
+  color: #08295e;
 }
 
 .coin-cell.special {
-  background: var(--coin-green);
-  color: #0f3d21;
+  background: linear-gradient(150deg, #1a5a9c, #26c07a);
+  color: #02212d;
 }
 
 .coin-cell.win {
-  background: var(--coin-silver);
-  color: #0c1b46;
+  background: var(--bg-grid-cell-win);
+  color: #eaf3ff;
 }
 
 .coin-cell.re-spin {
-  background: var(--coin-purple);
-  color: #26012d;
+  background: linear-gradient(145deg, #183d7d, #1c6dd2);
+  color: #e3f1ff;
 }
 
 .coin-cell.spinning {
@@ -521,13 +543,13 @@ body {
 
 .coin-cell.cell-win {
   animation: winPulse 0.85s ease both 2;
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 219, 112, 0.65);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(124, 184, 255, 0.75);
 }
 
 .coin-cell.cell-big-win {
   animation: bigWinBounce 1s ease both 2;
-  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.55), 0 0 25px rgba(255, 255, 255, 0.9);
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.55), 0 0 25px rgba(255, 213, 79, 0.95);
+  filter: drop-shadow(0 0 10px rgba(59, 201, 132, 0.7));
 }
 
 .status-strip,
@@ -537,7 +559,7 @@ body {
   gap: 0.45rem;
   background: var(--strip-bg);
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(124, 184, 255, 0.2);
   padding: 0.6rem;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -556,6 +578,7 @@ body {
 .status-tile__value {
   font-size: 0.95rem;
   font-weight: 700;
+  color: var(--text-strong);
 }
 
 .balance-cell.win .balance-cell__value.highlight {
@@ -573,7 +596,7 @@ body {
   letter-spacing: 0.1em;
   font-weight: 800;
   background: var(--start-gradient);
-  color: #2a072c;
+  color: #0a1b3c;
   box-shadow: 0 18px 40px var(--start-shadow);
   cursor: var(--cursor-finger);
   transition: transform 0.2s ease, filter 0.2s ease;
@@ -597,8 +620,8 @@ body {
   width: 100%;
   border-radius: 1.5rem;
   padding: 1rem 1.2rem;
-  background: rgba(8, 5, 26, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-panel);
+  border: 1px solid rgba(124, 184, 255, 0.2);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
